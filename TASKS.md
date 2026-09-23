@@ -222,26 +222,11 @@ Sprint 0 also establishes the controlled experimental environment, scientific in
 * [x] `git diff --check` passes
 * [x] Record S0.4 evidence
 
-## Deferred Synthetic Dynamics
+## S0.4 Boundary Outcome
 
-The following are intentionally deferred to the next environment implementation stage:
+S0.4 established the public/hidden/evaluation information boundary and the initial public runtime contract.
 
-* [ ] Implement deterministic synthetic world dynamics
-* [ ] Implement multiple interacting entities
-* [ ] Implement observable variables
-* [ ] Implement hidden variables
-* [ ] Implement controlled relations
-* [ ] Implement meaningful actions
-* [ ] Implement meaningful interventions
-* [ ] Implement benchmark condition generation
-* [ ] Implement paired counterfactual environments
-* [ ] Implement information-unavailable controls
-* [ ] Implement model-family controls
-* [ ] Implement parameter-failure controls
-* [ ] Implement false candidate opportunities
-* [ ] Implement genuine reusable concept opportunities
-* [ ] Implement unseen transfer contexts
-* [ ] Implement evaluator-side ground truth records
+The remaining dynamic benchmark requirements were intentionally moved into the subsequent S0.5 implementation stages rather than treating the contract shell as a completed scientific benchmark.
 
 **Status:** IMPLEMENTATION CHECKPOINT VERIFIED
 
@@ -257,11 +242,203 @@ The following are intentionally deferred to the next environment implementation 
 * `src/unknown/environment/public/runtime.py`
 * `tests/environment/`
 
-**Scientific caveat:** The current runtime is a tested contract-level environment boundary. It is not yet the final scientific benchmark.
+**Scientific caveat:** The environment boundary is verified, but the final scientific benchmark requires controlled dynamics, hidden mechanisms, interventions, paired conditions, evaluator-side ground truth, and transfer scenarios.
 
 ---
 
-# S0.5 - Ground Truth
+# S0.5 - Environment Dynamics, Ground Truth, and Observation
+
+## S0.5-A - Dynamics Contract
+
+* [x] Define deterministic state-transition contract
+* [x] Define entity state model
+* [x] Define position and velocity semantics
+* [x] Define world context
+* [x] Define relations
+* [x] Define reset contract
+* [x] Define determinism contract
+* [x] Define action contract
+* [x] Define intervention contract boundary
+* [x] Define transition contract
+* [x] Define public observation projection boundary
+* [x] Define hidden/evaluation isolation requirements
+* [x] Define reproducibility requirements
+* [x] Define dynamics testing requirements
+
+**Status:** COMPLETED
+
+**Primary artifact:**
+
+* `research/notes/S0.5_DYNAMICS_CONTRACT.md`
+
+---
+
+## S0.5-B - Deterministic World Dynamics
+
+* [x] Implement deterministic world models
+* [x] Implement entity categories
+* [x] Implement vectors
+* [x] Implement entity state
+* [x] Implement relation state
+* [x] Implement world context
+* [x] Implement world state
+* [x] Implement deterministic seeded initialization
+* [x] Implement bounded positions
+* [x] Implement deterministic velocities
+* [x] Implement deterministic entity categories
+* [x] Implement deterministic relations
+* [x] Implement `reset`
+* [x] Implement `state`
+* [x] Implement `seed`
+* [x] Implement `is_terminal`
+* [x] Implement `step`
+* [x] Implement action validation
+* [x] Implement NO_OP behavior
+* [x] Implement MOVE behavior
+* [x] Implement INTERACT validation boundary
+* [x] Implement deterministic position integration
+* [x] Implement position bounds
+* [x] Implement terminal horizon
+* [x] Test deterministic replay
+* [x] Test action/configuration behavior
+* [x] Record S0.5-B evidence
+* [x] Commit and push S0.5-B checkpoint
+
+**Status:** COMPLETED
+
+**Primary artifacts:**
+
+* `src/unknown/environment/dynamics/models.py`
+* `src/unknown/environment/dynamics/world.py`
+* `src/unknown/environment/dynamics/__init__.py`
+* `tests/environment/test_deterministic_world.py`
+* `tests/environment/test_world_action_configuration.py`
+* `research/notes/S0.5_B_EVIDENCE.md`
+
+**Engineering checkpoint:**
+
+* Full environment suite after S0.5-B: 116 passed
+* Deterministic world implementation verified
+* Commit: `3fae8d8 feat: implement deterministic world dynamics`
+
+**Scientific caveat:** S0.5-B establishes deterministic world mechanics only. It does not establish hidden benchmark mechanisms, concept discovery, representation failure diagnosis, causal validity, or scientific benchmark conclusions.
+
+---
+
+## S0.5-C - Public Observation Projection
+
+* [x] Define public observation projection contract
+* [x] Define public primitive observation fields
+* [x] Define public entity projection
+* [x] Define position exposure
+* [x] Define velocity exposure
+* [x] Keep internal mass private
+* [x] Keep internal semantic category private
+* [x] Define controlled public attributes
+* [x] Prevent arbitrary internal-field copying
+* [x] Define derived-quantity policy
+* [x] Define temporal history boundary
+* [x] Define public relation boundary
+* [x] Define event boundary
+* [x] Define observation-kind semantics
+* [x] Define step-index semantics
+* [x] Define deterministic simulation timestamp semantics
+* [x] Define opaque observation identifiers
+* [x] Define deterministic ordering
+* [x] Define projection purity
+* [x] Define projection isolation
+* [x] Define hidden-state isolation
+* [x] Define configuration boundary
+* [x] Define information-availability boundary
+* [x] Define information-unavailable distinction
+* [x] Define representation-failure distinction
+* [x] Define model-family-failure distinction
+* [x] Define parameter-failure distinction
+* [x] Define paired-counterfactual boundary
+* [x] Define no-oracle-feature rule
+* [x] Define leakage threat model
+* [x] Define public error contract
+* [x] Define external-dependency prohibition
+* [x] Define serialization boundary
+* [x] Implement `PublicObservationProjector`
+* [x] Integrate projector with public runtime
+* [x] Project reset observations
+* [x] Project current observations
+* [x] Project step results
+* [x] Preserve public-only runtime outputs
+* [x] Add observation projection tests
+* [x] Add observation determinism tests
+* [x] Add observation boundary tests
+* [x] Update runtime integration tests
+* [x] Update leakage contract test fixture
+* [x] Verify public runtime compilation
+* [x] Verify full repository test suite
+* [x] Record S0.5-C evidence
+
+**Status:** IMPLEMENTED - CHECKPOINT READY
+
+**Primary artifact:**
+
+* `research/notes/S0.5_C_OBSERVATION_CONTRACT.md`
+
+**Implementation artifacts:**
+
+* `src/unknown/environment/observation/__init__.py`
+* `src/unknown/environment/observation/projection.py`
+* `src/unknown/environment/public/runtime.py`
+
+**Test artifacts:**
+
+* `tests/environment/test_public_observation_projection.py`
+* `tests/environment/test_observation_boundary.py`
+* `tests/environment/test_observation_determinism.py`
+* `tests/environment/test_public_runtime.py`
+* `tests/environment/test_leakage_contract.py`
+
+**Verification state:**
+
+* S0.5-C focused projection tests: 25 passed
+* Leakage contract tests: 19 passed
+* Full repository suite: 147 passed
+* Runtime compilation: passed
+* `git diff --cached --check`: passed
+* `git diff --check`: passed
+
+**Scientific caveat:** S0.5-C establishes the public observation projection boundary and its executable tests. It does not establish autonomous concept discovery, representation-failure diagnosis, successful representation extension, causal discovery, predictive superiority, intervention validity, falsification validity, transfer validity, or benchmark-level scientific conclusions.
+
+---
+
+# S0.5-D - Dynamic Environment Completion
+
+* [ ] Define hidden dynamic mechanisms
+* [ ] Define observable variables
+* [ ] Define hidden variables
+* [ ] Define generating equations/functions
+* [ ] Define controlled relations
+* [ ] Define meaningful action semantics
+* [ ] Define intervention transition semantics
+* [ ] Define benchmark condition generation
+* [ ] Define paired counterfactual environments
+* [ ] Define information-unavailable controls
+* [ ] Define model-family controls
+* [ ] Define parameter-failure controls
+* [ ] Define false candidate opportunities
+* [ ] Define genuine reusable concept opportunities
+* [ ] Define unseen transfer contexts
+* [ ] Define evaluator-side ground-truth records
+* [ ] Implement hidden environment state
+* [ ] Implement evaluator-side ground truth
+* [ ] Implement meaningful intervention dynamics
+* [ ] Implement benchmark condition generation
+* [ ] Implement paired benchmark scenarios
+* [ ] Implement transfer scenarios
+* [ ] Execute dynamic leakage audit
+
+**Status:** NOT STARTED
+
+---
+
+# S0.5-E - Ground Truth
 
 * [ ] Define true hidden mechanism
 * [ ] Define hidden variables
@@ -404,9 +581,16 @@ The following are intentionally deferred to the next environment implementation 
 * [x] S0.4 environment schema
 * [x] S0.4 leakage audit
 * [x] S0.4 evidence
-* [x] Environment schema tests
-* [x] Environment runtime tests
-* [x] Leakage contract tests
+* [x] S0.4 environment schema tests
+* [x] S0.4 environment runtime tests
+* [x] S0.4 leakage contract tests
+* [x] S0.5-A dynamics contract
+* [x] S0.5-B deterministic world implementation
+* [x] S0.5-B evidence
+* [x] S0.5-C observation contract
+* [x] S0.5-C observation implementation
+* [x] S0.5-C observation tests
+* [ ] S0.5-C evidence
 * [ ] Final Sprint 0 evidence package
 
 **Status:** IN PROGRESS

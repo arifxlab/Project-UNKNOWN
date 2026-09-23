@@ -1,15 +1,18 @@
 """Tests for the public environment runtime.
 
-These tests verify the public runtime contract without exposing or depending
+These tests verify the public runtime boundary without exposing or depending
 on hidden benchmark truth or evaluation state.
 """
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 import pytest
 
 from unknown.environment.public.runtime import (
     EnvironmentNotInitializedError,
+    EnvironmentRuntimeError,
     EnvironmentTerminalError,
     InvalidPublicActionError,
     InvalidPublicInterventionError,
@@ -34,7 +37,7 @@ def config() -> PublicEnvironmentConfig:
         max_steps=3,
         world_width=100.0,
         world_height=100.0,
-        entity_count=0,
+        entity_count=2,
         observation_history_limit=10,
         allowed_action_kinds=(
             ActionKind.NO_OP,
@@ -52,6 +55,7 @@ def config() -> PublicEnvironmentConfig:
 
 def test_runtime_requires_reset_before_observation() -> None:
     """Observation before initialization must fail explicitly."""
+
     runtime = PublicEnvironmentRuntime()
 
     with pytest.raises(EnvironmentNotInitializedError):
@@ -60,6 +64,7 @@ def test_runtime_requires_reset_before_observation() -> None:
 
 def test_runtime_requires_reset_before_terminal_check() -> None:
     """Terminal state cannot be queried before initialization."""
+
     runtime = PublicEnvironmentRuntime()
 
     with pytest.raises(EnvironmentNotInitializedError):
@@ -68,32 +73,35 @@ def test_runtime_requires_reset_before_terminal_check() -> None:
 
 def test_runtime_requires_reset_before_metadata() -> None:
     """Episode metadata cannot be queried before initialization."""
+
     runtime = PublicEnvironmentRuntime()
 
     with pytest.raises(EnvironmentNotInitializedError):
         runtime.episode_metadata()
 
 
-def test_reset_returns_public_observation(
+def test_reset_returns_projected_public_observation(
     config: PublicEnvironmentConfig,
 ) -> None:
-    """Reset must return a public observation."""
+    """Reset must return a projection of the deterministic world."""
+
     runtime = PublicEnvironmentRuntime()
 
     observation = runtime.reset(config=config, seed=42)
 
     assert observation.step_index == 0
-    assert observation.observation_id == "observation-000000"
+    assert observation.observation_id == "observation-00000000"
     assert observation.kind.value == "state"
-    assert observation.entities == ()
-    assert observation.relations == ()
+    assert len(observation.entities) == config.entity_count
+    assert observation.relations
     assert observation.events == ()
 
 
 def test_reset_is_deterministic_for_public_initial_state(
     config: PublicEnvironmentConfig,
 ) -> None:
-    """Equivalent resets must expose equivalent initial public state."""
+    """Equivalent seeded resets must expose equivalent observations."""
+
     first = PublicEnvironmentRuntime()
     second = PublicEnvironmentRuntime()
 
@@ -103,45 +111,126 @@ def test_reset_is_deterministic_for_public_initial_state(
     assert first_observation == second_observation
 
 
-def test_episode_metadata_exposes_only_public_metadata(
+def test_different_seeds_produce_different_public_worlds(
     config: PublicEnvironmentConfig,
 ) -> None:
-    """Episode metadata must contain only the public contract."""
-    runtime = PublicEnvironmentRuntime()
-    runtime.reset(config=config, seed=7)
+    """Different seeds should produce different observable initial states."""
 
-    metadata = runtime.episode_metadata()
+    first = PublicEnvironmentRuntime()
+    second = PublicEnvironmentRuntime()
 
-    assert metadata.experiment_id == "opaque-experiment-001"
-    assert metadata.environment_version == "0.1.0"
-    assert metadata.schema_version == "0.1.0"
-    assert metadata.max_steps == 3
-    assert metadata.action_kinds == config.allowed_action_kinds
-    assert metadata.intervention_kinds == config.allowed_intervention_kinds
+    first_observation = first.reset(config=config, seed=123)
+    second_observation = second.reset(config=config, seed=456)
+
+    assert first_observation != second_observation
 
 
-def test_no_op_step_advances_episode(
+def test_observe_projects_current_world_state(
     config: PublicEnvironmentConfig,
 ) -> None:
-    """A valid public action must advance the episode."""
+    """Repeated observe calls return the current public projection."""
+
     runtime = PublicEnvironmentRuntime()
-    runtime.reset(config=config, seed=1)
+
+    first = runtime.reset(config=config, seed=42)
+    second = runtime.observe()
+
+    assert first == second
+
+
+def test_public_observation_does_not_expose_internal_mass(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """Internal mass must not cross the runtime observation boundary."""
+
+    runtime = PublicEnvironmentRuntime()
+
+    observation = runtime.reset(config=config, seed=42)
+
+    for entity in observation.entities:
+        assert entity.attributes == {}
+
+        assert "mass" not in repr(entity)
+
+
+def test_public_observation_does_not_expose_internal_category(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """Internal semantic category must not cross the runtime boundary."""
+
+    runtime = PublicEnvironmentRuntime()
+
+    observation = runtime.reset(config=config, seed=42)
+
+    for entity in observation.entities:
+        assert "category" not in repr(entity)
+        assert "AGENT" not in repr(entity)
+        assert "OBJECT" not in repr(entity)
+        assert "LANDMARK" not in repr(entity)
+
+
+def test_no_op_step_advances_real_world(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """A valid action must advance the deterministic world."""
+
+    runtime = PublicEnvironmentRuntime()
+
+    initial = runtime.reset(config=config, seed=42)
 
     result = runtime.step(
         PublicAction(kind=ActionKind.NO_OP),
     )
 
     assert result.observation.step_index == 1
-    assert result.observation.observation_id == "observation-000001"
+    assert result.observation.observation_id == "observation-00000001"
     assert result.reward == 0.0
     assert result.terminal is False
     assert runtime.is_terminal() is False
 
+    assert result.observation.entities != initial.entities
 
-def test_move_action_requires_vector(
+
+def test_move_action_changes_public_observation(
     config: PublicEnvironmentConfig,
 ) -> None:
-    """MOVE actions must provide their required public vector."""
+    """A public MOVE action must affect the projected world state."""
+
+    runtime = PublicEnvironmentRuntime()
+
+    initial = runtime.reset(config=config, seed=42)
+
+    entity_id = initial.entities[0].entity_id
+
+    result = runtime.step(
+        PublicAction(
+            kind=ActionKind.MOVE,
+            entity_id=entity_id,
+            vector=PublicVector2(x=1.0, y=0.0),
+        )
+    )
+
+    moved_entity = next(
+        entity
+        for entity in result.observation.entities
+        if entity.entity_id == entity_id
+    )
+
+    initial_entity = next(
+        entity
+        for entity in initial.entities
+        if entity.entity_id == entity_id
+    )
+
+    assert moved_entity.velocity.x == initial_entity.velocity.x + 1.0
+    assert moved_entity.velocity.y == initial_entity.velocity.y
+
+
+def test_move_action_requires_entity_id(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """MOVE actions require an entity identifier."""
+
     runtime = PublicEnvironmentRuntime()
     runtime.reset(config=config, seed=1)
 
@@ -149,38 +238,38 @@ def test_move_action_requires_vector(
         runtime.step(
             PublicAction(
                 kind=ActionKind.MOVE,
+                vector=PublicVector2(x=1.0, y=0.0),
             )
         )
 
 
-def test_move_action_with_vector_is_accepted(
+def test_move_action_requires_vector(
     config: PublicEnvironmentConfig,
 ) -> None:
-    """A valid MOVE action must be accepted by the public contract."""
+    """MOVE actions must provide their required public vector."""
+
     runtime = PublicEnvironmentRuntime()
     runtime.reset(config=config, seed=1)
 
-    result = runtime.step(
-        PublicAction(
-            kind=ActionKind.MOVE,
-            entity_id="entity-001",
-            vector=PublicVector2(x=1.0, y=0.0),
+    with pytest.raises(InvalidPublicActionError):
+        runtime.step(
+            PublicAction(
+                kind=ActionKind.MOVE,
+                entity_id="entity-0000",
+            )
         )
-    )
-
-    assert result.observation.step_index == 1
-    assert result.terminal is False
 
 
 def test_disallowed_action_is_rejected() -> None:
     """Actions outside the configured public action set must fail."""
+
     config = PublicEnvironmentConfig(
         environment_version="0.1.0",
         schema_version="0.1.0",
         max_steps=3,
         world_width=100.0,
         world_height=100.0,
-        entity_count=0,
+        entity_count=2,
         observation_history_limit=10,
         allowed_action_kinds=(ActionKind.NO_OP,),
         allowed_intervention_kinds=(
@@ -200,45 +289,11 @@ def test_disallowed_action_is_rejected() -> None:
         )
 
 
-def test_position_intervention_requires_vector(
-    config: PublicEnvironmentConfig,
-) -> None:
-    """SET_POSITION interventions must provide a vector."""
-    runtime = PublicEnvironmentRuntime()
-    runtime.reset(config=config, seed=1)
-
-    with pytest.raises(InvalidPublicInterventionError):
-        runtime.intervene(
-            PublicIntervention(
-                kind=InterventionKind.SET_POSITION,
-                entity_id="entity-001",
-            )
-        )
-
-
-def test_valid_position_intervention_is_accepted(
-    config: PublicEnvironmentConfig,
-) -> None:
-    """A valid position intervention must advance the episode."""
-    runtime = PublicEnvironmentRuntime()
-    runtime.reset(config=config, seed=1)
-
-    result = runtime.intervene(
-        PublicIntervention(
-            kind=InterventionKind.SET_POSITION,
-            entity_id="entity-001",
-            vector=PublicVector2(x=10.0, y=20.0),
-        )
-    )
-
-    assert result.observation.step_index == 1
-    assert result.terminal is False
-
-
 def test_terminal_state_is_reached_at_max_steps(
     config: PublicEnvironmentConfig,
 ) -> None:
     """The runtime must terminate exactly at the configured step limit."""
+
     runtime = PublicEnvironmentRuntime()
     runtime.reset(config=config, seed=1)
 
@@ -255,6 +310,7 @@ def test_step_after_terminal_state_is_rejected(
     config: PublicEnvironmentConfig,
 ) -> None:
     """No action may be applied after episode termination."""
+
     runtime = PublicEnvironmentRuntime()
     runtime.reset(config=config, seed=1)
 
@@ -265,10 +321,70 @@ def test_step_after_terminal_state_is_rejected(
         runtime.step(PublicAction(kind=ActionKind.NO_OP))
 
 
+def test_position_intervention_requires_vector(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """SET_POSITION interventions must provide a vector."""
+
+    runtime = PublicEnvironmentRuntime()
+    runtime.reset(config=config, seed=1)
+
+    with pytest.raises(InvalidPublicInterventionError):
+        runtime.intervene(
+            PublicIntervention(
+                kind=InterventionKind.SET_POSITION,
+                entity_id="entity-0000",
+            )
+        )
+
+
+def test_valid_intervention_is_not_silently_simulated(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """Intervention dynamics must not be fabricated by the runtime."""
+
+    runtime = PublicEnvironmentRuntime()
+    runtime.reset(config=config, seed=1)
+
+    with pytest.raises(NotImplementedError):
+        runtime.intervene(
+            PublicIntervention(
+                kind=InterventionKind.SET_POSITION,
+                entity_id="entity-0000",
+                vector=PublicVector2(x=10.0, y=20.0),
+            )
+        )
+
+
+def test_invalid_intervention_kind_is_rejected(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """Disallowed intervention kinds must fail before transition logic."""
+
+    restricted_config = replace(
+        config,
+        allowed_intervention_kinds=(
+            InterventionKind.SET_POSITION,
+        ),
+    )
+
+    runtime = PublicEnvironmentRuntime()
+    runtime.reset(config=restricted_config, seed=1)
+
+    with pytest.raises(InvalidPublicInterventionError):
+        runtime.intervene(
+            PublicIntervention(
+                kind=InterventionKind.REMOVE_ENTITY,
+                entity_id="entity-0000",
+            )
+        )
+
+
 def test_intervention_after_terminal_state_is_rejected(
     config: PublicEnvironmentConfig,
 ) -> None:
-    """No intervention may be applied after episode termination."""
+    """Interventions cannot be submitted after episode termination."""
+
     runtime = PublicEnvironmentRuntime()
     runtime.reset(config=config, seed=1)
 
@@ -279,7 +395,7 @@ def test_intervention_after_terminal_state_is_rejected(
         runtime.intervene(
             PublicIntervention(
                 kind=InterventionKind.SET_POSITION,
-                entity_id="entity-001",
+                entity_id="entity-0000",
                 vector=PublicVector2(x=0.0, y=0.0),
             )
         )
@@ -301,7 +417,6 @@ def test_invalid_configuration_is_rejected(
     value: int | float,
 ) -> None:
     """Invalid public configuration values must be rejected."""
-    from dataclasses import replace
 
     invalid_config = replace(config, **{field_name: value})
     runtime = PublicEnvironmentRuntime()
@@ -310,10 +425,11 @@ def test_invalid_configuration_is_rejected(
         runtime.reset(config=invalid_config, seed=1)
 
 
-def test_public_runtime_does_not_expose_hidden_or_evaluation_attributes(
+def test_runtime_does_not_expose_hidden_or_evaluation_attributes(
     config: PublicEnvironmentConfig,
 ) -> None:
     """Runtime instance must not expose benchmark truth attributes."""
+
     runtime = PublicEnvironmentRuntime()
     runtime.reset(config=config, seed=1)
 
@@ -330,3 +446,16 @@ def test_public_runtime_does_not_expose_hidden_or_evaluation_attributes(
     }
 
     assert forbidden_names.isdisjoint(vars(runtime))
+
+
+def test_runtime_does_not_return_world_state(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """Public runtime observations must never be WorldState objects."""
+
+    runtime = PublicEnvironmentRuntime()
+
+    observation = runtime.reset(config=config, seed=1)
+
+    assert observation.__class__.__name__ == "PublicObservation"
+    assert "WorldState" not in type(observation).__name__

@@ -390,11 +390,11 @@ is_terminal()
 episode_metadata()
 ```
 
-The runtime currently provides deterministic contract-level episode mechanics
-and validation.
+The runtime provides the public contract boundary and delegates simulation
+state to the deterministic dynamics layer.
 
-It intentionally does not yet implement the final synthetic benchmark
-dynamics.
+The final scientific benchmark mechanisms remain outside the S0.4 boundary
+and are being implemented incrementally through S0.5.
 
 ---
 
@@ -411,7 +411,7 @@ The public runtime must not:
 * expose evaluation scores;
 * return hidden or evaluation schema types.
 
-Automated tests currently verify these constraints.
+Automated tests verify these constraints.
 
 ---
 
@@ -461,56 +461,249 @@ Examples include:
 
 ---
 
-# S0.4 Verification State
+# S0.5-A Dynamics Contract
 
-Current verified test state:
+S0.5-A established the formal deterministic-world dynamics contract.
+
+The contract defines:
+
+* state transition semantics;
+* entity state;
+* position and velocity;
+* physical and behavioral properties;
+* relations;
+* world context;
+* episode state;
+* reset semantics;
+* determinism;
+* actions;
+* intervention boundary;
+* transitions;
+* terminal conditions;
+* public observation projection boundary;
+* hidden/evaluation separation;
+* reproducibility;
+* testing requirements.
+
+Primary artifact:
 
 ```text
-Public schema tests       11 passed
-Hidden schema tests       11 passed
-Evaluation schema tests   12 passed
-Boundary tests            14 passed
-Runtime tests             21 passed
-Leakage tests             19 passed
----------------------------------------
-Full repository tests     88 passed
+research/notes/S0.5_DYNAMICS_CONTRACT.md
 ```
 
-The current repository test suite is green.
+Status:
 
-Runtime compilation has passed.
-
-`git diff --check` has passed.
-
-The evidence artifact:
-
-```text
-research/notes/S0.4_EVIDENCE.md
-```
-
-has been expanded and verified at 381 lines.
+**Completed**
 
 ---
 
-# S0.4 Scientific Limitation
+# S0.5-B Deterministic World
 
-The current implementation does not establish:
+S0.5-B implemented the first executable deterministic synthetic world.
+
+Implementation:
+
+```text
+src/unknown/environment/dynamics/
+    __init__.py
+    models.py
+    world.py
+```
+
+The current world supports:
+
+* deterministic seeded initialization;
+* deterministic entity identifiers;
+* entity categories;
+* bounded positions;
+* deterministic velocities;
+* entity masses;
+* deterministic relations;
+* world context;
+* world state;
+* NO_OP;
+* MOVE validation and behavior;
+* INTERACT validation boundary;
+* deterministic position integration;
+* position clamping;
+* configured terminal horizon.
+
+The dynamics layer remains the internal simulation source of truth.
+
+Primary tests:
+
+```text
+tests/environment/test_deterministic_world.py
+tests/environment/test_world_action_configuration.py
+```
+
+S0.5-B verification state:
+
+```text
+Full environment suite: 116 passed
+Static compilation: passed
+git diff --check: passed
+```
+
+Checkpoint:
+
+```text
+3fae8d8 feat: implement deterministic world dynamics
+```
+
+Scientific limitation:
+
+S0.5-B establishes deterministic mechanics only. It does not establish
+concept discovery, representation failure diagnosis, causal correctness,
+intervention validity, transfer validity, or scientific benchmark results.
+
+---
+
+# S0.5-C Public Observation Projection
+
+S0.5-C defines and implements the boundary through which internal world state
+becomes information legitimately available to UNKNOWN.
+
+Primary contract:
+
+```text
+research/notes/S0.5_C_OBSERVATION_CONTRACT.md
+```
+
+Implementation:
+
+```text
+src/unknown/environment/observation/
+    __init__.py
+    projection.py
+```
+
+Runtime integration:
+
+```text
+src/unknown/environment/public/runtime.py
+```
+
+The resulting architecture is:
+
+```text
+UNKNOWN
+   |
+   v
+PublicEnvironmentRuntime
+   |
+   v
+DeterministicWorld
+   |
+   v
+WorldState
+   |
+   v
+PublicObservationProjector
+   |
+   v
+PublicObservation
+```
+
+## Public Observation Decisions
+
+The public observation exposes:
+
+* position;
+* velocity;
+* explicitly permitted relations;
+* events;
+* opaque entity identifiers;
+* deterministic step index;
+* deterministic simulation timestamp;
+* controlled public attributes.
+
+The projection does not automatically expose arbitrary internal state.
+
+Internal mass remains private.
+
+Internal semantic entity category remains private unless a future scientific
+contract explicitly promotes it into the public observation interface.
+
+Derived quantities such as:
+
+* distance;
+* relative position;
+* relative velocity;
+* acceleration;
+* speed;
+* nearest entity;
+* collision probability;
+
+are not automatically injected as primitive observations.
+
+The observation projector is intended to be:
+
+* deterministic;
+* pure;
+* isolated from hidden state;
+* isolated from evaluation state;
+* free of external dependencies;
+* free of oracle features;
+* deterministic in ordering and identifiers.
+
+## S0.5-C Boundary Principle
+
+> The simulator may know more than UNKNOWN. The evaluator may know more than
+> UNKNOWN. Neither may silently communicate that additional knowledge through
+> the public observation channel.
+
+## S0.5-C Verification
+
+Focused observation projection tests:
+
+```text
+25 passed
+```
+
+Leakage contract:
+
+```text
+19 passed
+```
+
+Full repository suite:
+
+```text
+147 passed
+```
+
+Runtime compilation:
+
+```text
+passed
+```
+
+Diff validation:
+
+```text
+git diff --cached --check  -> passed
+git diff --check           -> passed
+```
+
+## S0.5-C Scientific Limitation
+
+S0.5-C establishes an executable public observation boundary.
+
+It does not establish:
 
 * autonomous concept discovery;
-* representation failure detection;
+* representation-failure diagnosis;
 * successful representation extension;
 * causal discovery;
 * causal correctness;
 * predictive superiority;
 * intervention validity;
+* falsification validity;
 * transfer validity;
-* falsification capability;
 * benchmark-level scientific conclusions;
-* novelty of the overall research contribution;
+* novelty;
 * superiority over existing methods.
-
-The current environment is a tested scientific boundary and runtime
-foundation, not the final benchmark.
 
 ---
 
@@ -614,18 +807,25 @@ The project will not:
 
 **Sprint:** 0 - Scientific Foundation
 
-**Current Stage:** S0.4 implementation checkpoint verified
+**Current Stage:** S0.5-C Public Observation Projection
 
-**Implementation:** Started
+**S0.5-A:** Completed
 
-**Scientific benchmark:** Not yet implemented
+**S0.5-B:** Completed
+
+**S0.5-C:** Implemented - checkpoint ready
+
+**Implementation:** Active
+
+**Scientific benchmark:** Not yet complete
 
 **Novelty claim:** None
 
-**Current research gap:** Candidate and provisional
+**Research gap:** Candidate and provisional
 
-**Current scientific status:** Formal problem and first information boundary
-established; final prior-art equivalence check remains open.
+**Current verified test suite:** 147 passed
+
+**Next milestone:** S0.5-C evidence closure, followed by dynamic environment completion and ground-truth construction.
 
 ---
 
@@ -652,6 +852,9 @@ Research artifacts:
 * `research/notes/S0.4_ENVIRONMENT_SCHEMA.md`
 * `research/notes/S0.4_LEAKAGE_AUDIT.md`
 * `research/notes/S0.4_EVIDENCE.md`
+* `research/notes/S0.5_DYNAMICS_CONTRACT.md`
+* `research/notes/S0.5_B_EVIDENCE.md`
+* `research/notes/S0.5_C_OBSERVATION_CONTRACT.md`
 
 Implementation artifacts:
 
@@ -659,6 +862,9 @@ Implementation artifacts:
 * `src/unknown/environment/schemas/hidden.py`
 * `src/unknown/environment/schemas/evaluation.py`
 * `src/unknown/environment/public/runtime.py`
+* `src/unknown/environment/dynamics/models.py`
+* `src/unknown/environment/dynamics/world.py`
+* `src/unknown/environment/observation/projection.py`
 
 Test artifacts:
 
@@ -668,6 +874,11 @@ Test artifacts:
 * `tests/environment/test_boundary_contract.py`
 * `tests/environment/test_public_runtime.py`
 * `tests/environment/test_leakage_contract.py`
+* `tests/environment/test_deterministic_world.py`
+* `tests/environment/test_world_action_configuration.py`
+* `tests/environment/test_public_observation_projection.py`
+* `tests/environment/test_observation_boundary.py`
+* `tests/environment/test_observation_determinism.py`
 
 ---
 
@@ -690,6 +901,10 @@ determine:
 10. What benchmark construction choices could create leakage?
 11. What baseline budgets are fair?
 12. What result would falsify the central hypothesis?
+13. Which intervention transition semantics should be implemented without
+    creating a second source of truth?
+14. Which hidden mechanisms should be implemented before benchmark conditions
+    are introduced?
 
 ---
 
@@ -706,10 +921,23 @@ determine:
 7. False candidates and negative results are scientifically necessary.
 8. The environment must support paired counterfactual controls.
 9. The public runtime must remain isolated from hidden and evaluation schemas.
-10. The current runtime is a contract foundation, not the final benchmark.
-11. Dynamic leakage auditing must occur after benchmark dynamics exist.
-12. Sprint 0 cannot close until its full Definition of Done is satisfied.
-13. No later sprint should bypass unresolved scientific kill criteria.
+10. The deterministic world is the internal simulation source of truth.
+11. Public observations must be produced through an explicit projection
+    boundary.
+12. Public observation projection must not automatically expose arbitrary
+    internal fields.
+13. Internal mass and semantic category are private under the current
+    observation contract.
+14. Derived quantities are not primitive observations unless explicitly
+    promoted by a future contract.
+15. Observation identifiers, ordering, and timestamps must be deterministic
+    and independent of hidden benchmark semantics.
+16. The current observation projector is not a scientific discovery mechanism.
+17. Dynamic leakage auditing must occur after benchmark dynamics exist.
+18. Sprint 0 cannot close until its full Definition of Done is satisfied.
+19. No later sprint should bypass unresolved scientific kill criteria.
+20. No intervention transition mechanism should be duplicated outside the
+    dynamics source of truth.
 
 ---
 
@@ -738,9 +966,18 @@ proof of the research hypothesis.
 
 **S0.4 environment boundary:** Implemented and verified
 
-**Synthetic benchmark dynamics:** Not yet implemented
+**S0.5-A dynamics contract:** Completed
+
+**S0.5-B deterministic world:** Implemented and verified
+
+**S0.5-C observation projection:** Implemented and verified
+
+**Synthetic benchmark dynamics:** Partially implemented; scientific benchmark
+mechanisms remain incomplete
 
 **Autonomous discovery system:** Not yet implemented
 
-**Next milestone:** Complete S0.4 dynamic environment and then continue the
-remaining Sprint 0 scientific foundation tasks
+**Current checkpoint:** S0.5-C documentation/evidence closure
+
+**Next implementation stage:** S0.5-D dynamic environment completion and
+ground-truth construction

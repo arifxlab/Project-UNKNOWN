@@ -30,6 +30,7 @@ from unknown.environment.schemas.hidden import (
     HiddenState,
 )
 from unknown.environment.schemas.public import (
+    ActionKind,
     PublicAction,
     PublicEnvironmentConfig,
     PublicEnvironmentMetadata,
@@ -67,9 +68,9 @@ def _minimal_config() -> PublicEnvironmentConfig:
         max_steps=3,
         world_width=100.0,
         world_height=100.0,
-        entity_count=0,
+        entity_count=1,
         observation_history_limit=10,
-        allowed_action_kinds=(),
+        allowed_action_kinds=(ActionKind.NO_OP,),
         allowed_intervention_kinds=(),
         public_attributes=(),
     )
