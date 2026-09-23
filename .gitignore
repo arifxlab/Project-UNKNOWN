@@ -1,0 +1,68 @@
+# ================================
+# Project UNKNOWN - Git Ignore
+# ================================
+
+# JetBrains IDE
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python environments
+.venv/
+venv/
+env/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Type checking / linting caches
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local environment configuration
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local experiment outputs
+# Keep result definitions/configuration in Git,
+# but ignore generated local artifacts by default.
+results/*
+
+# Preserve results directory structure
+!results/.gitkeep
+
+# Local logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Python tooling
+.pyre/
+.pytype/
+
+# Local research scratch artifacts
+research/notes/_local/
