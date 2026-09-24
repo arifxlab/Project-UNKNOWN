@@ -4,7 +4,7 @@ This module implements the authoritative executable world substrate defined
 by the S0.5-A and S0.5-D dynamics contracts.
 
 The world owns simulation state and is the single authoritative transition
-system for ordinary actions. Public observation projection, interventions,
+system for ordinary actions and interventions. Public observation projection,
 benchmark conditions, evaluation state, and discovery logic remain outside
 this module.
 
@@ -12,8 +12,9 @@ Scientific boundary
 -------------------
 The dynamics layer must:
 
-- remain deterministic for fixed configuration, seed, and action sequence;
-- reject invalid actions before mutating simulation state;
+- remain deterministic for fixed configuration, seed, and transition
+  sequence;
+- reject invalid actions and interventions before mutating simulation state;
 - preserve state invariants across every transition;
 - avoid benchmark-condition or evaluation-dependent behavior;
 - avoid external runtime dependencies.
@@ -27,6 +28,7 @@ import random
 from unknown.environment.dynamics.models import (
     EntityCategory,
     EntityState,
+    InterventionRecord,
     RelationState,
     Vector2,
     WorldContext,
@@ -34,8 +36,10 @@ from unknown.environment.dynamics.models import (
 )
 from unknown.environment.schemas.public import (
     ActionKind,
+    InterventionKind,
     PublicAction,
     PublicEnvironmentConfig,
+    PublicIntervention,
 )
 
 
@@ -55,14 +59,17 @@ class InvalidWorldActionError(DeterministicWorldError):
     """Raised when a public action is invalid for the current world."""
 
 
+class InvalidWorldInterventionError(DeterministicWorldError):
+    """Raised when an intervention is invalid for the current world."""
+
+
 class DeterministicWorld:
     """Deterministic internal simulation world.
 
     The world owns only simulation state. It does not contain benchmark
     truth, evaluation state, discovery logic, or failure-condition labels.
 
-    The ``step`` method is the authoritative ordinary-action transition
-    boundary:
+    Ordinary and intervention transitions both follow:
 
         validate → transition → commit → terminal evaluation
 
@@ -76,6 +83,7 @@ class DeterministicWorld:
         self._seed: int | None = None
         self._max_steps: int | None = None
         self._allowed_action_kinds: tuple[ActionKind, ...] = ()
+        self._allowed_intervention_kinds: tuple[InterventionKind, ...] = ()
 
     def reset(
         self,
@@ -105,12 +113,16 @@ class DeterministicWorld:
             entities=entities,
             relations=relations,
             context=context,
+            interventions=(),
         )
 
         self._state = next_state
         self._seed = seed
         self._max_steps = config.max_steps
         self._allowed_action_kinds = tuple(config.allowed_action_kinds)
+        self._allowed_intervention_kinds = tuple(
+            config.allowed_intervention_kinds
+        )
 
         return next_state
 
@@ -147,7 +159,7 @@ class DeterministicWorld:
         return self._state.step_index >= self._max_steps
 
     def step(self, action: PublicAction) -> WorldState:
-        """Apply one deterministic action and advance the world.
+        """Apply one deterministic ordinary action and advance the world.
 
         Validation is completed before transition computation or state
         mutation. An invalid action therefore cannot partially modify the
@@ -172,6 +184,57 @@ class DeterministicWorld:
             entities=next_entities,
             relations=state.relations,
             context=state.context,
+            interventions=state.interventions,
+        )
+
+        self._state = next_state
+
+        return next_state
+
+    def intervene(
+        self,
+        intervention: PublicIntervention,
+    ) -> WorldState:
+        """Apply one authoritative deterministic intervention.
+
+        Intervention transitions are distinct from ordinary actions.
+
+        SET_POSITION:
+            Replace the selected entity position exactly and preserve its
+            velocity. No ordinary kinematic movement occurs.
+
+        SET_VELOCITY:
+            Replace the selected entity velocity exactly and preserve its
+            position. No ordinary kinematic movement occurs.
+
+        REMOVE_ENTITY:
+            Remove the selected entity and all relations incident to it.
+            Surviving entities and unrelated relations are preserved.
+
+        Validation completes before any state mutation.
+        """
+        state = self.state()
+
+        if self.is_terminal():
+            raise WorldTerminalError(
+                "Cannot intervene in a world that is already terminal."
+            )
+
+        self._validate_intervention(intervention, state)
+
+        next_entities, next_relations = self._transition_intervention(
+            state=state,
+            intervention=intervention,
+        )
+
+        record = self._create_intervention_record(intervention)
+
+        next_state = WorldState(
+            step_index=state.step_index + 1,
+            entities=next_entities,
+            relations=next_relations,
+            context=state.context,
+            interventions=state.interventions + (record,),
         )
 
         self._state = next_state
@@ -179,13 +242,13 @@ class DeterministicWorld:
         return next_state
 
     def _validate_config(
-            self,
-            config: PublicEnvironmentConfig,
+        self,
+        config: PublicEnvironmentConfig,
     ) -> None:
         """Validate configuration required by the deterministic world."""
         if isinstance(config.max_steps, bool) or not isinstance(
-                config.max_steps,
-                int,
+            config.max_steps,
+            int,
         ):
             raise ValueError("max_steps must be an integer.")
 
@@ -205,8 +268,8 @@ class DeterministicWorld:
             raise ValueError("world_height must be greater than zero.")
 
         if isinstance(config.entity_count, bool) or not isinstance(
-                config.entity_count,
-                int,
+            config.entity_count,
+            int,
         ):
             raise ValueError("entity_count must be an integer.")
 
@@ -359,6 +422,82 @@ class DeterministicWorld:
             f"Unsupported action kind: {action.kind!r}."
         )
 
+    def _validate_intervention(
+        self,
+        intervention: PublicIntervention,
+        state: WorldState,
+    ) -> None:
+        """Validate an intervention before any state mutation."""
+        if intervention.kind not in self._allowed_intervention_kinds:
+            raise InvalidWorldInterventionError(
+                f"Intervention kind {intervention.kind!r} is not allowed "
+                "by the current environment configuration."
+            )
+
+        if intervention.entity_id is None:
+            raise InvalidWorldInterventionError(
+                "Interventions require an entity_id."
+            )
+
+        entity_ids = {entity.entity_id for entity in state.entities}
+
+        if intervention.entity_id not in entity_ids:
+            raise InvalidWorldInterventionError(
+                f"Unknown entity_id: {intervention.entity_id!r}."
+            )
+
+        if intervention.kind in {
+            InterventionKind.SET_POSITION,
+            InterventionKind.SET_VELOCITY,
+        }:
+            if intervention.vector is None:
+                raise InvalidWorldInterventionError(
+                    f"{intervention.kind.value} interventions require "
+                    "a vector."
+                )
+
+            if not math.isfinite(intervention.vector.x):
+                raise InvalidWorldInterventionError(
+                    f"{intervention.kind.value} vector x must be finite."
+                )
+
+            if not math.isfinite(intervention.vector.y):
+                raise InvalidWorldInterventionError(
+                    f"{intervention.kind.value} vector y must be finite."
+                )
+
+        if intervention.kind is InterventionKind.SET_POSITION:
+            assert intervention.vector is not None
+
+            if not (
+                0.0 <= intervention.vector.x <= state.context.width
+            ):
+                raise InvalidWorldInterventionError(
+                    "SET_POSITION x must be inside world bounds."
+                )
+
+            if not (
+                0.0 <= intervention.vector.y <= state.context.height
+            ):
+                raise InvalidWorldInterventionError(
+                    "SET_POSITION y must be inside world bounds."
+                )
+
+        if intervention.kind is InterventionKind.REMOVE_ENTITY:
+            if intervention.vector is not None:
+                raise InvalidWorldInterventionError(
+                    "REMOVE_ENTITY interventions must not specify a vector."
+                )
+
+        if intervention.kind not in {
+            InterventionKind.SET_POSITION,
+            InterventionKind.SET_VELOCITY,
+            InterventionKind.REMOVE_ENTITY,
+        }:
+            raise InvalidWorldInterventionError(
+                f"Unsupported intervention kind: {intervention.kind!r}."
+            )
+
     @classmethod
     def _transition_entities(
         cls,
@@ -405,6 +544,117 @@ class DeterministicWorld:
             )
 
         return tuple(updated)
+
+    @staticmethod
+    def _transition_intervention(
+        state: WorldState,
+        intervention: PublicIntervention,
+    ) -> tuple[
+        tuple[EntityState, ...],
+        tuple[RelationState, ...],
+    ]:
+        """Compute an intervention transition without ordinary dynamics."""
+        target_id = intervention.entity_id
+
+        if intervention.kind is InterventionKind.SET_POSITION:
+            assert intervention.vector is not None
+
+            updated: list[EntityState] = []
+
+            for entity in state.entities:
+                if entity.entity_id == target_id:
+                    updated.append(
+                        EntityState(
+                            entity_id=entity.entity_id,
+                            position=Vector2(
+                                x=intervention.vector.x,
+                                y=intervention.vector.y,
+                            ),
+                            velocity=entity.velocity,
+                            mass=entity.mass,
+                            category=entity.category,
+                        )
+                    )
+                else:
+                    updated.append(entity)
+
+            return tuple(updated), state.relations
+
+        if intervention.kind is InterventionKind.SET_VELOCITY:
+            assert intervention.vector is not None
+
+            updated = []
+
+            for entity in state.entities:
+                if entity.entity_id == target_id:
+                    updated.append(
+                        EntityState(
+                            entity_id=entity.entity_id,
+                            position=entity.position,
+                            velocity=Vector2(
+                                x=intervention.vector.x,
+                                y=intervention.vector.y,
+                            ),
+                            mass=entity.mass,
+                            category=entity.category,
+                        )
+                    )
+                else:
+                    updated.append(entity)
+
+            return tuple(updated), state.relations
+
+        if intervention.kind is InterventionKind.REMOVE_ENTITY:
+            updated_entities = tuple(
+                entity
+                for entity in state.entities
+                if entity.entity_id != target_id
+            )
+
+            updated_relations = tuple(
+                relation
+                for relation in state.relations
+                if (
+                    relation.source_entity_id != target_id
+                    and relation.target_entity_id != target_id
+                )
+            )
+
+            return updated_entities, updated_relations
+
+        raise InvalidWorldInterventionError(
+            f"Unsupported intervention kind: {intervention.kind!r}."
+        )
+
+    @staticmethod
+    def _create_intervention_record(
+        intervention: PublicIntervention,
+    ) -> InterventionRecord:
+        """Create an immutable reproducibility record from public input."""
+        vector = None
+
+        if intervention.vector is not None:
+            vector = Vector2(
+                x=intervention.vector.x,
+                y=intervention.vector.y,
+            )
+
+        parameters: tuple[tuple[str, object], ...] = ()
+
+        if intervention.parameters:
+            parameters = tuple(
+                sorted(
+                    intervention.parameters.items(),
+                    key=lambda item: item[0],
+                )
+            )
+
+        return InterventionRecord(
+            kind=intervention.kind.value,
+            entity_id=intervention.entity_id,
+            vector=vector,
+            parameters=parameters,
+        )
 
     @staticmethod
     def _clamp_position(

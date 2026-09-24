@@ -149,7 +149,6 @@ def test_public_observation_does_not_expose_internal_mass(
 
     for entity in observation.entities:
         assert entity.attributes == {}
-
         assert "mass" not in repr(entity)
 
 
@@ -333,25 +332,207 @@ def test_position_intervention_requires_vector(
         runtime.intervene(
             PublicIntervention(
                 kind=InterventionKind.SET_POSITION,
-                entity_id="entity-0000",
+                entity_id="entity-000",
             )
         )
 
 
-def test_valid_intervention_is_not_silently_simulated(
+def test_set_position_intervention_changes_position_without_kinematics(
     config: PublicEnvironmentConfig,
 ) -> None:
-    """Intervention dynamics must not be fabricated by the runtime."""
+    """SET_POSITION replaces position while preserving velocity."""
+
+    runtime = PublicEnvironmentRuntime()
+    initial = runtime.reset(config=config, seed=1)
+
+    entity_id = initial.entities[0].entity_id
+    initial_entity = initial.entities[0]
+
+    result = runtime.intervene(
+        PublicIntervention(
+            kind=InterventionKind.SET_POSITION,
+            entity_id=entity_id,
+            vector=PublicVector2(x=10.0, y=20.0),
+        )
+    )
+
+    updated_entity = result.observation.entities[0]
+
+    assert result.observation.step_index == 1
+    assert updated_entity.position.x == 10.0
+    assert updated_entity.position.y == 20.0
+    assert updated_entity.velocity == initial_entity.velocity
+
+
+def test_set_velocity_intervention_changes_velocity_without_kinematics(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """SET_VELOCITY replaces velocity while preserving position."""
+
+    runtime = PublicEnvironmentRuntime()
+    initial = runtime.reset(config=config, seed=1)
+
+    entity_id = initial.entities[0].entity_id
+    initial_entity = initial.entities[0]
+
+    result = runtime.intervene(
+        PublicIntervention(
+            kind=InterventionKind.SET_VELOCITY,
+            entity_id=entity_id,
+            vector=PublicVector2(x=7.0, y=-4.0),
+        )
+    )
+
+    updated_entity = result.observation.entities[0]
+
+    assert result.observation.step_index == 1
+    assert updated_entity.position == initial_entity.position
+    assert updated_entity.velocity.x == 7.0
+    assert updated_entity.velocity.y == -4.0
+
+
+def test_remove_entity_intervention_removes_entity_from_public_observation(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """REMOVE_ENTITY removes the selected entity from the projection."""
+
+    runtime = PublicEnvironmentRuntime()
+    initial = runtime.reset(config=config, seed=1)
+
+    entity_id = initial.entities[0].entity_id
+
+    result = runtime.intervene(
+        PublicIntervention(
+            kind=InterventionKind.REMOVE_ENTITY,
+            entity_id=entity_id,
+        )
+    )
+
+    remaining_ids = {
+        entity.entity_id
+        for entity in result.observation.entities
+    }
+
+    assert result.observation.step_index == 1
+    assert entity_id not in remaining_ids
+    assert len(result.observation.entities) == 1
+
+
+def test_valid_intervention_advances_terminal_lifecycle(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """An intervention counts as one transition toward max_steps."""
 
     runtime = PublicEnvironmentRuntime()
     runtime.reset(config=config, seed=1)
 
-    with pytest.raises(NotImplementedError):
+    first = runtime.intervene(
+        PublicIntervention(
+            kind=InterventionKind.SET_POSITION,
+            entity_id="entity-000",
+            vector=PublicVector2(x=10.0, y=20.0),
+        )
+    )
+
+    second = runtime.intervene(
+        PublicIntervention(
+            kind=InterventionKind.SET_VELOCITY,
+            entity_id="entity-001",
+            vector=PublicVector2(x=2.0, y=3.0),
+        )
+    )
+
+    third = runtime.intervene(
+        PublicIntervention(
+            kind=InterventionKind.SET_POSITION,
+            entity_id="entity-001",
+            vector=PublicVector2(x=30.0, y=40.0),
+        )
+    )
+
+    assert first.terminal is False
+    assert second.terminal is False
+    assert third.terminal is True
+    assert third.observation.step_index == config.max_steps
+    assert runtime.is_terminal() is True
+
+
+def test_invalid_intervention_entity_is_rejected(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """Interventions targeting missing entities must fail."""
+
+    runtime = PublicEnvironmentRuntime()
+    runtime.reset(config=config, seed=1)
+
+    before = runtime.observe()
+
+    with pytest.raises(InvalidPublicInterventionError):
         runtime.intervene(
             PublicIntervention(
                 kind=InterventionKind.SET_POSITION,
-                entity_id="entity-0000",
+                entity_id="entity-999",
                 vector=PublicVector2(x=10.0, y=20.0),
+            )
+        )
+
+    assert runtime.observe() == before
+
+
+def test_remove_entity_rejects_vector(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """REMOVE_ENTITY must not accept a vector."""
+
+    runtime = PublicEnvironmentRuntime()
+    runtime.reset(config=config, seed=1)
+
+    with pytest.raises(InvalidPublicInterventionError):
+        runtime.intervene(
+            PublicIntervention(
+                kind=InterventionKind.REMOVE_ENTITY,
+                entity_id="entity-000",
+                vector=PublicVector2(x=1.0, y=1.0),
+            )
+        )
+
+
+def test_set_position_out_of_bounds_is_rejected(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """SET_POSITION must reject positions outside the world."""
+
+    runtime = PublicEnvironmentRuntime()
+    runtime.reset(config=config, seed=1)
+
+    before = runtime.observe()
+
+    with pytest.raises(InvalidPublicInterventionError):
+        runtime.intervene(
+            PublicIntervention(
+                kind=InterventionKind.SET_POSITION,
+                entity_id="entity-000",
+                vector=PublicVector2(x=101.0, y=20.0),
+            )
+        )
+
+    assert runtime.observe() == before
+
+
+def test_set_velocity_non_finite_value_is_rejected(
+    config: PublicEnvironmentConfig,
+) -> None:
+    """SET_VELOCITY must reject non-finite values."""
+
+    runtime = PublicEnvironmentRuntime()
+    runtime.reset(config=config, seed=1)
+
+    with pytest.raises(InvalidPublicInterventionError):
+        runtime.intervene(
+            PublicIntervention(
+                kind=InterventionKind.SET_VELOCITY,
+                entity_id="entity-000",
+                vector=PublicVector2(x=float("nan"), y=0.0),
             )
         )
 
@@ -375,7 +556,7 @@ def test_invalid_intervention_kind_is_rejected(
         runtime.intervene(
             PublicIntervention(
                 kind=InterventionKind.REMOVE_ENTITY,
-                entity_id="entity-0000",
+                entity_id="entity-000",
             )
         )
 
@@ -395,7 +576,7 @@ def test_intervention_after_terminal_state_is_rejected(
         runtime.intervene(
             PublicIntervention(
                 kind=InterventionKind.SET_POSITION,
-                entity_id="entity-0000",
+                entity_id="entity-000",
                 vector=PublicVector2(x=0.0, y=0.0),
             )
         )

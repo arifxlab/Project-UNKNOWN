@@ -35,6 +35,7 @@ from dataclasses import dataclass
 from unknown.environment.dynamics import (
     DeterministicWorld,
     InvalidWorldActionError,
+    InvalidWorldInterventionError,
     WorldNotInitializedError,
     WorldState,
     WorldTerminalError,
@@ -194,26 +195,43 @@ class PublicEnvironmentRuntime:
         self,
         intervention: PublicIntervention,
     ) -> PublicStepResult:
-        """Validate a public intervention.
+        """Apply one public intervention through the authoritative world."""
 
-        Intervention transition dynamics are intentionally not implemented
-        in DeterministicWorld yet.
+        runtime_state = self._require_initialized()
 
-        This method therefore preserves the existing public contract without
-        inventing a second transition mechanism inside the runtime.
-        """
-
-        state = self._require_initialized()
-
-        if state.terminal:
+        if runtime_state.terminal:
             raise EnvironmentTerminalError(
                 "Cannot intervene in an environment that is already terminal."
             )
 
         self._validate_intervention(intervention)
 
-        raise NotImplementedError(
-            "Intervention transition dynamics are not implemented yet."
+        try:
+            world_state = self._world.intervene(intervention)
+        except WorldTerminalError as error:
+            raise EnvironmentTerminalError(
+                "Cannot intervene in an environment that is already terminal."
+            ) from error
+        except InvalidWorldInterventionError as error:
+            raise InvalidPublicInterventionError(
+                "The public intervention was rejected by the environment."
+            ) from error
+        except WorldNotInitializedError as error:
+            raise EnvironmentNotInitializedError(
+                "Environment must be reset before use."
+            ) from error
+
+        terminal = self._world.is_terminal()
+
+        self._state = _PublicRuntimeState(
+            experiment_id=runtime_state.experiment_id,
+            terminal=terminal,
+        )
+
+        return PublicStepResult(
+            observation=self._project_world_state(world_state),
+            reward=0.0,
+            terminal=terminal,
         )
 
     def is_terminal(self) -> bool:
@@ -343,6 +361,11 @@ class PublicEnvironmentRuntime:
                 f"Intervention kind {intervention.kind!r} is not allowed."
             )
 
+        if intervention.entity_id is None:
+            raise InvalidPublicInterventionError(
+                "Interventions require an entity identifier."
+            )
+
         if (
             intervention.kind
             in {
@@ -353,4 +376,12 @@ class PublicEnvironmentRuntime:
         ):
             raise InvalidPublicInterventionError(
                 f"{intervention.kind.value} interventions require a vector."
+            )
+
+        if (
+            intervention.kind is InterventionKind.REMOVE_ENTITY
+            and intervention.vector is not None
+        ):
+            raise InvalidPublicInterventionError(
+                "REMOVE_ENTITY interventions must not specify a vector."
             )

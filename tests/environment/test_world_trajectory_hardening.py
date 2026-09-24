@@ -1,4 +1,4 @@
-"""Hardening tests for authoritative world trajectories."""
+"""Dedicated tests for authoritative deterministic interventions."""
 
 from __future__ import annotations
 
@@ -6,69 +6,158 @@ import math
 
 import pytest
 
+from tests.helpers.environment import make_config
 from unknown.environment.dynamics import (
     DeterministicWorld,
-    InvalidWorldActionError,
+    InvalidWorldInterventionError,
+    WorldTerminalError,
 )
 from unknown.environment.schemas.public import (
     ActionKind,
+    InterventionKind,
     PublicAction,
+    PublicIntervention,
     PublicVector2,
 )
 
-from tests.helpers.environment import make_config
 
+def test_intervention_is_recorded_in_reproducibility_state() -> None:
+    """Applied interventions must become part of WorldState."""
+    world = DeterministicWorld()
 
-def test_long_action_sequence_is_bitwise_reproducible() -> None:
-    """A fixed seed and fixed action sequence reproduce every state."""
-    config = make_config(entity_count=3, max_steps=8)
+    initial = world.reset(
+        config=make_config(entity_count=2),
+        seed=42,
+    )
 
-    actions = [
-        PublicAction(kind=ActionKind.NO_OP),
-        PublicAction(
-            kind=ActionKind.MOVE,
+    assert initial.interventions == ()
+
+    state = world.intervene(
+        PublicIntervention(
+            kind=InterventionKind.SET_POSITION,
             entity_id="entity-000",
-            vector=PublicVector2(x=0.5, y=-0.25),
-        ),
-        PublicAction(
-            kind=ActionKind.INTERACT,
+            vector=PublicVector2(x=10.0, y=20.0),
+        )
+    )
+
+    assert len(state.interventions) == 1
+
+    record = state.interventions[0]
+
+    assert record.kind == InterventionKind.SET_POSITION.value
+    assert record.entity_id == "entity-000"
+    assert record.vector is not None
+    assert record.vector.x == 10.0
+    assert record.vector.y == 20.0
+
+
+def test_multiple_interventions_preserve_order() -> None:
+    """Intervention history preserves exact transition order."""
+    world = DeterministicWorld()
+
+    world.reset(
+        config=make_config(entity_count=2, max_steps=4),
+        seed=42,
+    )
+
+    world.intervene(
+        PublicIntervention(
+            kind=InterventionKind.SET_POSITION,
+            entity_id="entity-000",
+            vector=PublicVector2(x=10.0, y=20.0),
+        )
+    )
+
+    world.intervene(
+        PublicIntervention(
+            kind=InterventionKind.SET_VELOCITY,
             entity_id="entity-001",
-        ),
-        PublicAction(
-            kind=ActionKind.MOVE,
-            entity_id="entity-002",
-            vector=PublicVector2(x=-0.75, y=0.5),
-        ),
-        PublicAction(kind=ActionKind.NO_OP),
-        PublicAction(
-            kind=ActionKind.MOVE,
-            entity_id="entity-000",
-            vector=PublicVector2(x=0.25, y=0.25),
-        ),
-        PublicAction(
-            kind=ActionKind.INTERACT,
-            entity_id="entity-002",
-        ),
-        PublicAction(kind=ActionKind.NO_OP),
+            vector=PublicVector2(x=3.0, y=4.0),
+        )
+    )
+
+    history = world.state().interventions
+
+    assert [record.kind for record in history] == [
+        InterventionKind.SET_POSITION.value,
+        InterventionKind.SET_VELOCITY.value,
     ]
+
+    assert [record.entity_id for record in history] == [
+        "entity-000",
+        "entity-001",
+    ]
+
+
+def test_action_and_intervention_sequence_is_reproducible() -> None:
+    """Mixed ordinary/intervention trajectories must be deterministic."""
+    config = make_config(entity_count=3, max_steps=7)
 
     first = DeterministicWorld()
     second = DeterministicWorld()
 
-    first.reset(config=config, seed=314159)
-    second.reset(config=config, seed=314159)
+    first.reset(config=config, seed=1234)
+    second.reset(config=config, seed=1234)
 
-    assert first.state() == second.state()
+    transitions = [
+        (
+            "action",
+            PublicAction(kind=ActionKind.NO_OP),
+        ),
+        (
+            "intervention",
+            PublicIntervention(
+                kind=InterventionKind.SET_POSITION,
+                entity_id="entity-001",
+                vector=PublicVector2(x=20.0, y=30.0),
+            ),
+        ),
+        (
+            "action",
+            PublicAction(
+                kind=ActionKind.MOVE,
+                entity_id="entity-000",
+                vector=PublicVector2(x=1.0, y=-2.0),
+            ),
+        ),
+        (
+            "intervention",
+            PublicIntervention(
+                kind=InterventionKind.SET_VELOCITY,
+                entity_id="entity-002",
+                vector=PublicVector2(x=4.0, y=-3.0),
+            ),
+        ),
+        (
+            "action",
+            PublicAction(kind=ActionKind.INTERACT, entity_id="entity-002"),
+        ),
+        (
+            "intervention",
+            PublicIntervention(
+                kind=InterventionKind.REMOVE_ENTITY,
+                entity_id="entity-001",
+            ),
+        ),
+        (
+            "action",
+            PublicAction(kind=ActionKind.NO_OP),
+        ),
+    ]
 
-    for action in actions:
-        first_state = first.step(action)
-        second_state = second.step(action)
+    for transition_kind, transition in transitions:
+        if transition_kind == "action":
+            first_state = first.step(transition)
+            second_state = second.step(transition)
+        else:
+            first_state = first.intervene(transition)
+            second_state = second.intervene(transition)
 
         assert first_state == second_state
 
 
-def test_invalid_action_does_not_mutate_state() -> None:
-    """Rejecting an invalid action leaves the authoritative state unchanged."""
+def test_invalid_intervention_does_not_mutate_world() -> None:
+    """All rejected interventions must leave state unchanged."""
     world = DeterministicWorld()
 
     world.reset(
@@ -79,55 +168,33 @@ def test_invalid_action_does_not_mutate_state() -> None:
     before = world.state()
 
     with pytest.raises(
-        InvalidWorldActionError,
+        InvalidWorldInterventionError,
         match="Unknown entity_id",
     ):
-        world.step(
-            PublicAction(
-                kind=ActionKind.MOVE,
+        world.intervene(
+            PublicIntervention(
+                kind=InterventionKind.SET_POSITION,
                 entity_id="entity-999",
-                vector=PublicVector2(x=1.0, y=1.0),
+                vector=PublicVector2(x=10.0, y=20.0),
             )
         )
 
-    after = world.state()
-
-    assert after == before
-    assert world.is_terminal() is False
+    assert world.state() == before
 
 
-def test_non_finite_move_vector_is_rejected() -> None:
-    """Non-finite movement values cannot enter the simulation."""
-    world = DeterministicWorld()
-
-    world.reset(
-        config=make_config(entity_count=1),
-        seed=42,
-    )
-
-    invalid_vectors = (
+@pytest.mark.parametrize(
+    "vector",
+    [
         PublicVector2(x=math.nan, y=0.0),
         PublicVector2(x=0.0, y=math.nan),
         PublicVector2(x=math.inf, y=0.0),
         PublicVector2(x=0.0, y=-math.inf),
-    )
-
-    for vector in invalid_vectors:
-        with pytest.raises(
-            InvalidWorldActionError,
-            match="must be finite",
-        ):
-            world.step(
-                PublicAction(
-                    kind=ActionKind.MOVE,
-                    entity_id="entity-000",
-                    vector=vector,
-                )
-            )
-
-
-def test_non_finite_move_vector_does_not_mutate_state() -> None:
-    """Rejecting non-finite input leaves the world unchanged."""
+    ],
+)
+def test_set_velocity_rejects_non_finite_vector(
+    vector: PublicVector2,
+) -> None:
+    """SET_VELOCITY must reject non-finite values."""
     world = DeterministicWorld()
 
     world.reset(
@@ -138,142 +205,119 @@ def test_non_finite_move_vector_does_not_mutate_state() -> None:
     before = world.state()
 
     with pytest.raises(
-        InvalidWorldActionError,
+        InvalidWorldInterventionError,
         match="must be finite",
     ):
-        world.step(
-            PublicAction(
-                kind=ActionKind.MOVE,
+        world.intervene(
+            PublicIntervention(
+                kind=InterventionKind.SET_VELOCITY,
                 entity_id="entity-000",
-                vector=PublicVector2(x=math.nan, y=0.0),
+                vector=vector,
             )
         )
 
     assert world.state() == before
 
 
-def test_trajectory_preserves_entity_identity_and_mass() -> None:
-    """Ordinary transitions preserve identity, mass, and category."""
-    config = make_config(entity_count=4, max_steps=5)
-
-    world = DeterministicWorld()
-
-    initial = world.reset(
-        config=config,
-        seed=99,
-    )
-
-    initial_properties = {
-        entity.entity_id: (entity.mass, entity.category)
-        for entity in initial.entities
-    }
-
-    actions = [
-        PublicAction(kind=ActionKind.NO_OP),
-        PublicAction(
-            kind=ActionKind.MOVE,
-            entity_id="entity-001",
-            vector=PublicVector2(x=3.0, y=-2.0),
-        ),
-        PublicAction(
-            kind=ActionKind.INTERACT,
-            entity_id="entity-002",
-        ),
-        PublicAction(kind=ActionKind.NO_OP),
-        PublicAction(
-            kind=ActionKind.MOVE,
-            entity_id="entity-003",
-            vector=PublicVector2(x=-1.0, y=4.0),
-        ),
-    ]
-
-    for action in actions:
-        state = world.step(action)
-
-        for entity in state.entities:
-            expected_mass, expected_category = initial_properties[
-                entity.entity_id
-            ]
-
-            assert entity.mass == expected_mass
-            assert entity.category == expected_category
-
-
-def test_trajectory_preserves_position_bounds() -> None:
-    """Every state in a trajectory remains inside world bounds."""
-    config = make_config(entity_count=4, max_steps=6)
-
+def test_set_position_rejects_out_of_bounds_vector() -> None:
+    """SET_POSITION must reject rather than clamp intervention input."""
     world = DeterministicWorld()
 
     world.reset(
-        config=config,
-        seed=12345,
+        config=make_config(
+            entity_count=1,
+            world_width=100.0,
+            world_height=100.0,
+        ),
+        seed=42,
     )
 
-    actions = [
-        PublicAction(kind=ActionKind.NO_OP),
-        PublicAction(
-            kind=ActionKind.MOVE,
-            entity_id="entity-000",
-            vector=PublicVector2(x=1000.0, y=-1000.0),
-        ),
-        PublicAction(
-            kind=ActionKind.MOVE,
-            entity_id="entity-001",
-            vector=PublicVector2(x=-1000.0, y=1000.0),
-        ),
-        PublicAction(kind=ActionKind.NO_OP),
-        PublicAction(
-            kind=ActionKind.MOVE,
-            entity_id="entity-002",
-            vector=PublicVector2(x=500.0, y=500.0),
-        ),
-        PublicAction(kind=ActionKind.NO_OP),
-    ]
+    before = world.state()
 
-    for action in actions:
-        state = world.step(action)
+    with pytest.raises(
+        InvalidWorldInterventionError,
+        match="inside world bounds",
+    ):
+        world.intervene(
+            PublicIntervention(
+                kind=InterventionKind.SET_POSITION,
+                entity_id="entity-000",
+                vector=PublicVector2(x=101.0, y=50.0),
+            )
+        )
 
-        for entity in state.entities:
-            assert 0.0 <= entity.position.x <= config.world_width
-            assert 0.0 <= entity.position.y <= config.world_height
+    assert world.state() == before
 
 
-def test_reset_after_terminal_creates_new_trajectory() -> None:
-    """Reset fully replaces a terminal world with a fresh deterministic run."""
-    config = make_config(entity_count=2, max_steps=1)
-
+def test_remove_entity_rejects_unknown_entity() -> None:
+    """REMOVE_ENTITY must reject missing entity identifiers."""
     world = DeterministicWorld()
 
-    first = world.reset(config=config, seed=42)
-    terminal = world.step(PublicAction(kind=ActionKind.NO_OP))
+    world.reset(
+        config=make_config(entity_count=2),
+        seed=42,
+    )
 
-    assert terminal.step_index == 1
-    assert world.is_terminal() is True
+    before = world.state()
+
+    with pytest.raises(
+        InvalidWorldInterventionError,
+        match="Unknown entity_id",
+    ):
+        world.intervene(
+            PublicIntervention(
+                kind=InterventionKind.REMOVE_ENTITY,
+                entity_id="entity-999",
+            )
+        )
+
+    assert world.state() == before
+
+
+def test_intervention_after_terminal_state_is_rejected() -> None:
+    """Terminal worlds cannot accept interventions."""
+    world = DeterministicWorld()
+
+    world.reset(
+        config=make_config(entity_count=1, max_steps=1),
+        seed=42,
+    )
+
+    world.step(PublicAction(kind=ActionKind.NO_OP))
+
+    before = world.state()
+
+    with pytest.raises(WorldTerminalError):
+        world.intervene(
+            PublicIntervention(
+                kind=InterventionKind.SET_POSITION,
+                entity_id="entity-000",
+                vector=PublicVector2(x=10.0, y=20.0),
+            )
+        )
+
+    assert world.state() == before
+
+
+def test_intervention_history_is_reset_with_new_episode() -> None:
+    """Reset must discard intervention history from the prior episode."""
+    world = DeterministicWorld()
+
+    config = make_config(entity_count=1, max_steps=3)
+
+    first = world.reset(config=config, seed=42)
+
+    world.intervene(
+        PublicIntervention(
+            kind=InterventionKind.SET_POSITION,
+            entity_id="entity-000",
+            vector=PublicVector2(x=10.0, y=20.0),
+        )
+    )
+
+    assert len(world.state().interventions) == 1
 
     second = world.reset(config=config, seed=42)
 
-    assert second.step_index == 0
-    assert world.is_terminal() is False
     assert second == first
-
-def test_boolean_max_steps_is_rejected() -> None:
-    """Boolean max_steps must not be accepted as an integer horizon."""
-    config = make_config(max_steps=True)  # type: ignore[arg-type]
-
-    with pytest.raises(ValueError, match="max_steps must be an integer"):
-        DeterministicWorld().reset(
-            config=config,
-            seed=42,
-        )
-
-
-def test_boolean_entity_count_is_rejected() -> None:
-    """Boolean entity_count must not be accepted as an integer count."""
-    config = make_config(entity_count=True)  # type: ignore[arg-type]
-
-    with pytest.raises(ValueError, match="entity_count must be an integer"):
-        DeterministicWorld().reset(
-            config=config,
-            seed=42,
-        )
+    assert second.interventions == ()

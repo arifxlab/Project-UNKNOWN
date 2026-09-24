@@ -62,6 +62,23 @@ class WorldContext:
 
 
 @dataclass(frozen=True, slots=True)
+class InterventionRecord:
+    """Immutable record of an intervention applied to the world.
+
+    The record is part of internal reproducibility state.
+
+    It contains only intervention input data. It does not contain hidden
+    benchmark truth, expected effects, evaluator labels, or outcome
+    judgments.
+    """
+
+    kind: str
+    entity_id: str
+    vector: Vector2 | None
+    parameters: tuple[tuple[str, object], ...]
+
+
+@dataclass(frozen=True, slots=True)
 class WorldState:
     """Complete deterministic simulation state for one timestep."""
 
@@ -69,3 +86,4 @@ class WorldState:
     entities: tuple[EntityState, ...]
     relations: tuple[RelationState, ...]
     context: WorldContext
+    interventions: tuple[InterventionRecord, ...] = ()

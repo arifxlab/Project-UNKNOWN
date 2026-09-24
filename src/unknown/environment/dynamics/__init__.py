@@ -3,6 +3,7 @@
 from unknown.environment.dynamics.models import (
     EntityCategory,
     EntityState,
+    InterventionRecord,
     RelationState,
     Vector2,
     WorldContext,
@@ -12,6 +13,7 @@ from unknown.environment.dynamics.world import (
     DeterministicWorld,
     DeterministicWorldError,
     InvalidWorldActionError,
+    InvalidWorldInterventionError,
     WorldNotInitializedError,
     WorldTerminalError,
 )
@@ -21,7 +23,9 @@ __all__ = [
     "DeterministicWorldError",
     "EntityCategory",
     "EntityState",
+    "InterventionRecord",
     "InvalidWorldActionError",
+    "InvalidWorldInterventionError",
     "RelationState",
     "Vector2",
     "WorldContext",
