@@ -416,7 +416,7 @@ The remaining dynamic benchmark requirements were intentionally moved into the s
 * [ ] Define generating equations/functions
 * [ ] Define controlled relations
 * [ ] Define meaningful action semantics
-* [ ] Define intervention transition semantics
+* [x] Define intervention transition semantics
 * [ ] Define benchmark condition generation
 * [ ] Define paired counterfactual environments
 * [ ] Define information-unavailable controls
@@ -428,7 +428,7 @@ The remaining dynamic benchmark requirements were intentionally moved into the s
 * [ ] Define evaluator-side ground-truth records
 * [ ] Implement hidden environment state
 * [ ] Implement evaluator-side ground truth
-* [ ] Implement meaningful intervention dynamics
+* [x] Implement meaningful intervention dynamics
 * [ ] Implement benchmark condition generation
 * [ ] Implement paired benchmark scenarios
 * [ ] Implement transfer scenarios
@@ -511,15 +511,69 @@ S0.5-D.2 establishes deterministic and invariant-preserving infrastructure only.
 
 ## S0.5-D.3 - Authoritative Intervention Transition
 
-**Status:** NOT STARTED
+**Status:** COMPLETED
 
-Planned objective:
+Objective:
 
 Implement intervention transitions through the authoritative dynamics layer and preserve a single source of truth for ordinary actions and interventions.
+
+Completed:
+
+* Implemented authoritative `SET_POSITION` transition semantics.
+* Implemented authoritative `SET_VELOCITY` transition semantics.
+* Implemented authoritative `REMOVE_ENTITY` transition semantics.
+* Preserved validation-before-mutation semantics.
+* Rejected invalid and out-of-bounds intervention inputs.
+* Preserved entity identity and state invariants where applicable.
+* Removed incident relations when an entity is removed.
+* Added explicit intervention history to internal reproducibility state.
+* Kept intervention history outside the public observation boundary.
+* Delegated public intervention execution to `DeterministicWorld.intervene()`.
+* Avoided duplicate intervention transition logic in the public runtime.
+* Preserved deterministic intervention trajectories.
+* Preserved terminal lifecycle semantics.
+* Added intervention-specific tests and strengthened existing runtime/invariant/determinism tests.
+* Recorded S0.5-D.3 evidence.
+
+Primary evidence artifact:
+
+* `research/notes/S0.5_D3_EVIDENCE.md`
+
+Implementation artifacts:
+
+* `src/unknown/environment/dynamics/models.py`
+* `src/unknown/environment/dynamics/world.py`
+* `src/unknown/environment/dynamics/__init__.py`
+* `src/unknown/environment/public/runtime.py`
+
+Test artifacts:
+
+* `tests/environment/test_world_interventions.py`
+* `tests/environment/test_public_runtime.py`
+* `tests/environment/test_world_invariants.py`
+* `tests/environment/test_world_trajectory_hardening.py`
+* `tests/helpers/environment.py`
+
+Verification:
+
+* Full repository suite: **178 passed**
+* Python compilation: **passed**
+* `git diff --check`: **passed**
+* `git diff --cached --check`: **passed**
+* Working tree after implementation checkpoint: **clean**
+* Git implementation checkpoint: `af21961 feat: implement authoritative intervention transitions`
+
+Scientific boundary:
+
+S0.5-D.3 establishes controlled intervention infrastructure. It does not establish that interventions discover concepts, diagnose representation failure, validate causal explanations, establish transfer, or prove the research hypothesis.
 
 ## S0.5-D.4 - Controlled Benchmark Conditions
 
 **Status:** NOT STARTED
+
+Objective:
+
+Define and implement controlled benchmark conditions that allow representation failure to be experimentally distinguished from information-unavailable, model-family, parameter, and decoy conditions.
 
 ## S0.5-D.5 - Paired Counterfactuals
 
@@ -695,6 +749,8 @@ Implement intervention transitions through the authoritative dynamics layer and 
 * [x] S0.5-D.1 dynamic environment contract
 * [x] S0.5-D.2 dynamic transition hardening
 * [x] S0.5-D.2 evidence
+* [x] S0.5-D.3 authoritative intervention transition
+* [x] S0.5-D.3 evidence
 * [ ] Final Sprint 0 evidence package
 
 **Status:** IN PROGRESS

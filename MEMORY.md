@@ -759,7 +759,7 @@ Status:
 ## S0.5-D.2 Dynamic Transition Hardening
 
 S0.5-D.2 hardened the deterministic world before intervention and benchmark
-logic are introduced.
+logic were introduced.
 
 ### Scientific role
 
@@ -889,37 +889,172 @@ It does not establish:
 
 # S0.5-D.3 Authoritative Intervention Transition
 
-The next implementation stage is S0.5-D.3.
+S0.5-D.3 established interventions as an authoritative deterministic
+transition mechanism in the dynamics source of truth.
 
-The objective is to implement intervention transitions through the same
-authoritative dynamics layer rather than creating a second transition engine
-inside the public runtime.
+## Scientific role
 
-The intended transition boundary becomes:
+The objective was to provide controlled world-state modification for later
+experiments without creating a second transition engine inside the public
+runtime.
 
-$$
-S_{t+1}=T(S_t,A_t,I_t)
-$$
+The resulting architecture is:
 
-The initial public intervention types already defined by the schemas and
-dynamic contract are:
+```text
+Public Intervention
+        |
+        v
+Public Runtime Validation
+        |
+        v
+DeterministicWorld.intervene(...)
+        |
+        v
+Authoritative World Transition
+        |
+        v
+Public Observation Projection
+```
 
-* SET_POSITION;
-* SET_VELOCITY;
-* REMOVE_ENTITY.
+The dynamics layer remains the single source of truth.
 
-Their semantics must be implemented in the dynamics source of truth.
+## Intervention semantics
 
-D.3 must preserve:
+### SET_POSITION
 
-* determinism;
-* validation-before-mutation;
-* public/hidden/evaluation separation;
-* reproducibility;
-* no oracle access;
-* no duplicate transition logic.
+`SET_POSITION` directly replaces the selected entity position.
 
-D.3 is not yet implemented.
+Properties:
+
+* target entity must exist;
+* vector is required;
+* vector components must be finite;
+* requested position must be within world bounds;
+* velocity is preserved;
+* no ordinary kinematic timestep is applied;
+* step index advances by one.
+
+Out-of-bounds positions are rejected rather than silently clamped.
+
+### SET_VELOCITY
+
+`SET_VELOCITY` directly replaces the selected entity velocity.
+
+Properties:
+
+* target entity must exist;
+* vector is required;
+* vector components must be finite;
+* position is preserved;
+* no ordinary kinematic timestep is applied;
+* step index advances by one.
+
+### REMOVE_ENTITY
+
+`REMOVE_ENTITY` removes the selected entity.
+
+Properties:
+
+* target entity must exist;
+* selected entity is removed;
+* all incident relations are removed;
+* surviving entities are not reconnected automatically;
+* step index advances by one.
+
+## Reproducibility
+
+Intervention history is represented internally as part of the world state so
+that controlled intervention sequences form part of reproducible simulation
+state.
+
+Intervention history is not exposed through the public observation.
+
+## Validation
+
+Interventions follow validation-before-mutation semantics.
+
+Invalid intervention inputs do not partially mutate world state.
+
+## Terminal behavior
+
+Interventions use the normal world lifecycle.
+
+Each intervention advances the step index by one. If the configured horizon is
+reached, the world becomes terminal according to the existing terminal rule.
+
+No separate intervention-specific terminal mechanism was introduced.
+
+## Determinism
+
+Identical configuration, seed, initial state, action sequence, and
+intervention sequence must produce identical trajectories.
+
+No evaluator state, hidden benchmark labels, or expected outcomes are used
+by the intervention transition mechanism.
+
+## Invariants
+
+The implementation verifies preservation of relevant state invariants:
+
+* entity identity;
+* entity mass;
+* entity category;
+* position bounds;
+* velocity/position preservation according to intervention type;
+* relation preservation for non-removal interventions;
+* incident-relation removal for `REMOVE_ENTITY`;
+* immutability of state structures.
+
+## Verification
+
+Final implementation verification:
+
+```text
+Full repository suite: 178 passed
+Python compilation: passed
+git diff --check: passed
+```
+
+Git implementation checkpoint:
+
+```text
+af21961 feat: implement authoritative intervention transitions
+```
+
+Remote:
+
+```text
+origin/main
+```
+
+The implementation checkpoint was pushed successfully.
+
+## Evidence
+
+Primary evidence artifact:
+
+```text
+research/notes/S0.5_D3_EVIDENCE.md
+```
+
+## Scientific limitation
+
+D.3 establishes intervention infrastructure.
+
+It does not establish:
+
+* autonomous concept discovery;
+* representation-failure diagnosis;
+* causal discovery;
+* causal validity;
+* predictive superiority;
+* falsification success;
+* transfer success;
+* benchmark validity;
+* novelty;
+* scientific superiority.
+
+The intervention mechanism is infrastructure for those later experiments.
 
 ---
 
@@ -1023,7 +1158,7 @@ The project will not:
 
 **Sprint:** 0 - Scientific Foundation
 
-**Current Stage:** S0.5-D.2 Dynamic Transition Hardening
+**Current Stage:** S0.5-D.3 Authoritative Intervention Transition
 
 **S0.5-A:** Completed
 
@@ -1033,9 +1168,11 @@ The project will not:
 
 **S0.5-D.1:** Completed
 
-**S0.5-D.2:** Completed - checkpoint pending Git commit
+**S0.5-D.2:** Completed
 
-**S0.5-D.3:** Next
+**S0.5-D.3:** Completed
+
+**S0.5-D.4:** Next
 
 **Implementation:** Active
 
@@ -1045,9 +1182,9 @@ The project will not:
 
 **Research gap:** Candidate and provisional
 
-**Current verified test suite:** 163 passed
+**Current verified test suite:** 178 passed
 
-**Next milestone:** S0.5-D.3 authoritative intervention transition
+**Next milestone:** S0.5-D.4 Controlled Benchmark Conditions
 
 ---
 
@@ -1080,6 +1217,7 @@ Research artifacts:
 * `research/notes/S0.5_C_EVIDENCE.md`
 * `research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md`
 * `research/notes/S0.5_D2_EVIDENCE.md`
+* `research/notes/S0.5_D3_EVIDENCE.md`
 
 Implementation artifacts:
 
@@ -1106,6 +1244,7 @@ Test artifacts:
 * `tests/environment/test_observation_determinism.py`
 * `tests/environment/test_world_trajectory_hardening.py`
 * `tests/environment/test_world_invariants.py`
+* `tests/environment/test_world_interventions.py`
 
 ---
 
@@ -1128,9 +1267,7 @@ determine:
 10. What benchmark construction choices could create leakage?
 11. What baseline budgets are fair?
 12. What result would falsify the central hypothesis?
-13. Which intervention transition semantics should be implemented without
-    creating a second source of truth?
-14. Which hidden mechanisms should be implemented before benchmark conditions
+13. Which hidden mechanisms should be implemented before benchmark conditions
     are introduced?
 
 ---
@@ -1173,6 +1310,25 @@ determine:
     could confound later benchmark conditions.
 25. Multi-step deterministic replay and state-invariant tests are required
     before intervention and benchmark-condition work proceeds.
+26. Interventions are authoritative dynamics transitions, not ordinary policy
+    actions.
+27. `SET_POSITION` directly replaces position and does not apply an ordinary
+    kinematic timestep.
+28. `SET_VELOCITY` directly replaces velocity and does not apply an ordinary
+    kinematic timestep.
+29. `REMOVE_ENTITY` removes all incident relations without automatic
+    reconnection.
+30. Intervention transitions increment the world step index by one.
+31. Intervention history belongs to internal reproducibility state and is not
+    part of the public observation.
+32. Out-of-bounds `SET_POSITION` interventions are rejected rather than
+    silently clamped.
+33. Public intervention execution delegates to the authoritative dynamics
+    layer.
+34. D.3 does not constitute evidence of concept discovery, causal validity,
+    transfer success, benchmark validity, or novelty.
+35. The next implementation stage is controlled benchmark-condition design,
+    not autonomous discovery implementation.
 
 ---
 
@@ -1211,11 +1367,13 @@ proof of the research hypothesis.
 
 **S0.5-D.2 dynamic transition hardening:** Implemented and verified
 
+**S0.5-D.3 authoritative intervention transition:** Implemented and verified
+
 **Synthetic benchmark dynamics:** Partially implemented; scientific benchmark
 mechanisms remain incomplete
 
 **Autonomous discovery system:** Not yet implemented
 
-**Current checkpoint:** S0.5-D.2 documentation/evidence closure
+**Current checkpoint:** S0.5-D.3 evidence/documentation closure
 
-**Next implementation stage:** S0.5-D.3 authoritative intervention transition
+**Next implementation stage:** S0.5-D.4 Controlled Benchmark Conditions
