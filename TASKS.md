@@ -436,6 +436,53 @@ The remaining dynamic benchmark requirements were intentionally moved into the s
 
 **Status:** NOT STARTED
 
+S0.5-D — Dynamic Environment Completion
+Status: IN PROGRESS
+
+S0.5-D.1 — Dynamic Environment Contract
+Status: COMPLETED
+
+Completed:
+- Defined authoritative dynamic transition contract.
+- Defined action semantics.
+- Defined intervention semantics.
+- Defined deterministic temporal semantics.
+- Defined information-unavailable conditions.
+- Defined representation-failure conditions.
+- Defined model-family controls.
+- Defined parameter-failure controls.
+- Defined decoy conditions.
+- Defined paired-counterfactual requirements.
+- Defined hidden/evaluation separation.
+- Defined leakage requirements.
+- Defined reproducibility requirements.
+- Defined scientific and engineering acceptance criteria.
+- Defined S0.5-D Definition of Done.
+
+Artifact:
+- research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md
+
+S0.5-D.2 — Dynamic Transition Hardening
+Status: NOT STARTED
+
+S0.5-D.3 — Authoritative Intervention Transition
+Status: NOT STARTED
+
+S0.5-D.4 — Controlled Benchmark Conditions
+Status: NOT STARTED
+
+S0.5-D.5 — Paired Counterfactuals
+Status: NOT STARTED
+
+S0.5-D.6 — Hidden/Evaluation Integration
+Status: NOT STARTED
+
+S0.5-D.7 — Leakage + Reproducibility Audit
+Status: NOT STARTED
+
+S0.5-D.8 — Evidence + Checkpoint
+Status: NOT STARTED
+
 ---
 
 # S0.5-E - Ground Truth

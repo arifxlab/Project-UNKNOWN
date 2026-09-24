@@ -707,6 +707,94 @@ It does not establish:
 
 ---
 
+## S0.5-D — Dynamic Environment Completion
+
+### Current milestone
+
+S0.5-D.1 Dynamic Environment Contract.
+
+The dynamic environment is treated as experimental infrastructure rather than as a demonstration environment.
+
+### Scientific purpose
+
+The environment must support controlled experimental distinction among:
+
+* Information Unavailable
+* Representation Failure
+* Model-Family Failure
+* Parameter Failure
+* unnecessary/decoy candidate explanations
+
+The environment must not assume that a prediction failure implies representation failure.
+
+### Authoritative transition principle
+
+The environment uses one authoritative transition mechanism:
+
+$$
+S_{t+1}=T(S_t,A_t,I_t)
+$$
+
+Ordinary actions and interventions must ultimately pass through the same authoritative dynamics rather than creating duplicate transition logic inside the public runtime.
+
+### Intervention principle
+
+Public interventions currently include:
+
+* SET_POSITION
+* SET_VELOCITY
+* REMOVE_ENTITY
+
+Their semantics must be implemented in the dynamics layer rather than simulated independently by the public runtime.
+
+### Controlled-condition principle
+
+Future benchmark conditions must permit paired comparisons between:
+
+* parameter failure;
+* model-family failure;
+* representation failure;
+* information-unavailable conditions.
+
+Condition labels remain hidden from UNKNOWN.
+
+### Paired-counterfactual principle
+
+Benchmark pairs must change only the intended experimental factor while controlling irrelevant variables.
+
+A paired benchmark is evidence infrastructure, not itself evidence that the desired hypothesis is true.
+
+### Hidden/evaluation boundary
+
+Benchmark conditions, hidden variables, ground-truth representations, paired-condition identities, and evaluator state remain outside the public observation interface.
+
+The simulator must never modify dynamics according to evaluator outcomes or candidate correctness.
+
+### Reproducibility
+
+For fixed environment version, configuration, seed, action sequence, and intervention sequence, the trajectory must be deterministic.
+
+Wall-clock time, uncontrolled randomness, network services, filesystem state, and process state must not influence scientific outcomes.
+
+### Research integrity
+
+S0.5-D does not establish autonomous concept discovery, representation discovery, causal correctness, transfer, superiority, or novelty.
+
+It establishes controlled infrastructure required to test those claims later.
+
+### Contract artifact
+
+Primary source of truth:
+
+`research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md`
+
+### Next milestone
+
+S0.5-D.2 — Dynamic Transition Hardening.
+
+No autonomous discovery algorithm is introduced during S0.5-D.
+
+
 # Required Future Environment Conditions
 
 The eventual benchmark must distinguish:
