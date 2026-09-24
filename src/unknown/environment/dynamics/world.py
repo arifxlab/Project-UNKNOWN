@@ -1,16 +1,27 @@
 """Deterministic synthetic world for Project UNKNOWN.
 
-This module implements the initial executable world substrate defined by
-the S0.5-A dynamics contract.
+This module implements the authoritative executable world substrate defined
+by the S0.5-A and S0.5-D dynamics contracts.
 
-The world is intentionally small and deterministic. It provides seeded
-initialization and deterministic action transitions. Public observation
-projection, interventions, and benchmark conditions are implemented in
-later stages.
+The world owns simulation state and is the single authoritative transition
+system for ordinary actions. Public observation projection, interventions,
+benchmark conditions, evaluation state, and discovery logic remain outside
+this module.
+
+Scientific boundary
+-------------------
+The dynamics layer must:
+
+- remain deterministic for fixed configuration, seed, and action sequence;
+- reject invalid actions before mutating simulation state;
+- preserve state invariants across every transition;
+- avoid benchmark-condition or evaluation-dependent behavior;
+- avoid external runtime dependencies.
 """
 
 from __future__ import annotations
 
+import math
 import random
 
 from unknown.environment.dynamics.models import (
@@ -49,7 +60,16 @@ class DeterministicWorld:
 
     The world owns only simulation state. It does not contain benchmark
     truth, evaluation state, discovery logic, or failure-condition labels.
+
+    The ``step`` method is the authoritative ordinary-action transition
+    boundary:
+
+        validate → transition → commit → terminal evaluation
+
+    Validation completes before any state mutation occurs.
     """
+
+    _TIMESTEP = 1.0
 
     def __init__(self) -> None:
         self._state: WorldState | None = None
@@ -75,22 +95,24 @@ class DeterministicWorld:
         context = WorldContext(
             width=config.world_width,
             height=config.world_height,
-            timestep=1.0,
+            timestep=self._TIMESTEP,
         )
 
         relations = self._create_relations(entities)
 
-        self._state = WorldState(
+        next_state = WorldState(
             step_index=0,
             entities=entities,
             relations=relations,
             context=context,
         )
+
+        self._state = next_state
         self._seed = seed
         self._max_steps = config.max_steps
         self._allowed_action_kinds = tuple(config.allowed_action_kinds)
 
-        return self._state
+        return next_state
 
     def state(self) -> WorldState:
         """Return the current internal world state."""
@@ -125,7 +147,12 @@ class DeterministicWorld:
         return self._state.step_index >= self._max_steps
 
     def step(self, action: PublicAction) -> WorldState:
-        """Apply one deterministic action and advance the world."""
+        """Apply one deterministic action and advance the world.
+
+        Validation is completed before transition computation or state
+        mutation. An invalid action therefore cannot partially modify the
+        authoritative simulation state.
+        """
         state = self.state()
 
         if self.is_terminal():
@@ -140,28 +167,48 @@ class DeterministicWorld:
             action=action,
         )
 
-        self._state = WorldState(
+        next_state = WorldState(
             step_index=state.step_index + 1,
             entities=next_entities,
             relations=state.relations,
             context=state.context,
         )
 
-        return self._state
+        self._state = next_state
+
+        return next_state
 
     def _validate_config(
-        self,
-        config: PublicEnvironmentConfig,
+            self,
+            config: PublicEnvironmentConfig,
     ) -> None:
         """Validate configuration required by the deterministic world."""
+        if isinstance(config.max_steps, bool) or not isinstance(
+                config.max_steps,
+                int,
+        ):
+            raise ValueError("max_steps must be an integer.")
+
         if config.max_steps <= 0:
             raise ValueError("max_steps must be greater than zero.")
+
+        if not math.isfinite(config.world_width):
+            raise ValueError("world_width must be finite.")
 
         if config.world_width <= 0:
             raise ValueError("world_width must be greater than zero.")
 
+        if not math.isfinite(config.world_height):
+            raise ValueError("world_height must be finite.")
+
         if config.world_height <= 0:
             raise ValueError("world_height must be greater than zero.")
+
+        if isinstance(config.entity_count, bool) or not isinstance(
+                config.entity_count,
+                int,
+        ):
+            raise ValueError("entity_count must be an integer.")
 
         if config.entity_count <= 0:
             raise ValueError("entity_count must be greater than zero.")
@@ -281,6 +328,16 @@ class DeterministicWorld:
             if action.vector is None:
                 raise InvalidWorldActionError(
                     "MOVE actions require a vector."
+                )
+
+            if not math.isfinite(action.vector.x):
+                raise InvalidWorldActionError(
+                    "MOVE vector x must be finite."
+                )
+
+            if not math.isfinite(action.vector.y):
+                raise InvalidWorldActionError(
+                    "MOVE vector y must be finite."
                 )
 
             return

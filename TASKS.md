@@ -375,7 +375,7 @@ The remaining dynamic benchmark requirements were intentionally moved into the s
 * [x] Verify full repository test suite
 * [x] Record S0.5-C evidence
 
-**Status:** IMPLEMENTED - CHECKPOINT READY
+**Status:** COMPLETED
 
 **Primary artifact:**
 
@@ -434,54 +434,108 @@ The remaining dynamic benchmark requirements were intentionally moved into the s
 * [ ] Implement transfer scenarios
 * [ ] Execute dynamic leakage audit
 
-**Status:** NOT STARTED
+**Status:** IN PROGRESS
 
-S0.5-D — Dynamic Environment Completion
-Status: IN PROGRESS
+## S0.5-D.1 - Dynamic Environment Contract
 
-S0.5-D.1 — Dynamic Environment Contract
-Status: COMPLETED
+**Status:** COMPLETED
 
 Completed:
-- Defined authoritative dynamic transition contract.
-- Defined action semantics.
-- Defined intervention semantics.
-- Defined deterministic temporal semantics.
-- Defined information-unavailable conditions.
-- Defined representation-failure conditions.
-- Defined model-family controls.
-- Defined parameter-failure controls.
-- Defined decoy conditions.
-- Defined paired-counterfactual requirements.
-- Defined hidden/evaluation separation.
-- Defined leakage requirements.
-- Defined reproducibility requirements.
-- Defined scientific and engineering acceptance criteria.
-- Defined S0.5-D Definition of Done.
+
+* Defined authoritative dynamic transition contract.
+* Defined action semantics.
+* Defined intervention semantics.
+* Defined deterministic temporal semantics.
+* Defined information-unavailable conditions.
+* Defined representation-failure conditions.
+* Defined model-family controls.
+* Defined parameter-failure controls.
+* Defined decoy conditions.
+* Defined paired-counterfactual requirements.
+* Defined hidden/evaluation separation.
+* Defined leakage requirements.
+* Defined reproducibility requirements.
+* Defined scientific and engineering acceptance criteria.
+* Defined S0.5-D Definition of Done.
 
 Artifact:
-- research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md
 
-S0.5-D.2 — Dynamic Transition Hardening
-Status: NOT STARTED
+* `research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md`
 
-S0.5-D.3 — Authoritative Intervention Transition
-Status: NOT STARTED
+## S0.5-D.2 - Dynamic Transition Hardening
 
-S0.5-D.4 — Controlled Benchmark Conditions
-Status: NOT STARTED
+**Status:** COMPLETED
 
-S0.5-D.5 — Paired Counterfactuals
-Status: NOT STARTED
+Objective:
 
-S0.5-D.6 — Hidden/Evaluation Integration
-Status: NOT STARTED
+Establish the deterministic world transition system as trustworthy experimental infrastructure before introducing intervention and benchmark-condition logic.
 
-S0.5-D.7 — Leakage + Reproducibility Audit
-Status: NOT STARTED
+Completed:
 
-S0.5-D.8 — Evidence + Checkpoint
-Status: NOT STARTED
+* Hardened deterministic transition validation.
+* Added finite numeric validation for MOVE vectors.
+* Added explicit integer validation for `max_steps`.
+* Added explicit integer validation for `entity_count`.
+* Rejected boolean values where integer configuration semantics are required.
+* Preserved validation-before-mutation semantics.
+* Verified invalid actions do not mutate world state.
+* Verified deterministic multi-step trajectory replay.
+* Verified entity identity preservation.
+* Verified mass preservation.
+* Verified position-bound preservation.
+* Verified immutable state and collection structures.
+* Verified NO_OP invariants.
+* Verified MOVE target-velocity semantics.
+* Verified relation stability during ordinary actions.
+* Verified reset after terminal state.
+* Preserved the existing kinematic transition model without introducing new physics.
+* Added dedicated transition-hardening and invariant test modules.
+* Recorded S0.5-D.2 evidence.
+
+Artifacts:
+
+* `src/unknown/environment/dynamics/world.py`
+* `tests/environment/test_world_trajectory_hardening.py`
+* `tests/environment/test_world_invariants.py`
+* `research/notes/S0.5_D2_EVIDENCE.md`
+
+Verification:
+
+* Full repository suite: **163 passed**
+* Python compilation: **passed**
+* `git diff --check`: **passed**
+
+Scientific boundary:
+
+S0.5-D.2 establishes deterministic and invariant-preserving infrastructure only. It does not establish intervention validity, benchmark validity, representation-failure diagnosis, concept discovery, causal correctness, transfer success, scientific superiority, or novelty.
+
+## S0.5-D.3 - Authoritative Intervention Transition
+
+**Status:** NOT STARTED
+
+Planned objective:
+
+Implement intervention transitions through the authoritative dynamics layer and preserve a single source of truth for ordinary actions and interventions.
+
+## S0.5-D.4 - Controlled Benchmark Conditions
+
+**Status:** NOT STARTED
+
+## S0.5-D.5 - Paired Counterfactuals
+
+**Status:** NOT STARTED
+
+## S0.5-D.6 - Hidden/Evaluation Integration
+
+**Status:** NOT STARTED
+
+## S0.5-D.7 - Leakage + Reproducibility Audit
+
+**Status:** NOT STARTED
+
+## S0.5-D.8 - Evidence + Checkpoint
+
+**Status:** NOT STARTED
 
 ---
 
@@ -637,7 +691,10 @@ Status: NOT STARTED
 * [x] S0.5-C observation contract
 * [x] S0.5-C observation implementation
 * [x] S0.5-C observation tests
-* [ ] S0.5-C evidence
+* [x] S0.5-C evidence
+* [x] S0.5-D.1 dynamic environment contract
+* [x] S0.5-D.2 dynamic transition hardening
+* [x] S0.5-D.2 evidence
 * [ ] Final Sprint 0 evidence package
 
 **Status:** IN PROGRESS

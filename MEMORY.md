@@ -707,93 +707,221 @@ It does not establish:
 
 ---
 
-## S0.5-D — Dynamic Environment Completion
+# S0.5-D Dynamic Environment Completion
 
-### Current milestone
+S0.5-D treats the dynamic environment as experimental infrastructure rather
+than as a demonstration environment.
 
-S0.5-D.1 Dynamic Environment Contract.
-
-The dynamic environment is treated as experimental infrastructure rather than as a demonstration environment.
-
-### Scientific purpose
+## Scientific purpose
 
 The environment must support controlled experimental distinction among:
 
-* Information Unavailable
-* Representation Failure
-* Model-Family Failure
-* Parameter Failure
-* unnecessary/decoy candidate explanations
+* Information Unavailable;
+* Representation Failure;
+* Model-Family Failure;
+* Parameter Failure;
+* unnecessary or decoy candidate explanations.
 
-The environment must not assume that a prediction failure implies representation failure.
+The environment must not assume that a prediction failure implies
+representation failure.
 
-### Authoritative transition principle
+## S0.5-D.1 Dynamic Environment Contract
 
-The environment uses one authoritative transition mechanism:
+S0.5-D.1 established the formal contract for dynamic environment completion.
+
+The contract defines:
+
+* authoritative dynamic transition semantics;
+* action semantics;
+* intervention semantics;
+* deterministic temporal semantics;
+* information-unavailable conditions;
+* representation-failure conditions;
+* model-family controls;
+* parameter-failure controls;
+* decoy conditions;
+* paired-counterfactual requirements;
+* hidden/evaluation separation;
+* leakage requirements;
+* reproducibility requirements;
+* scientific and engineering acceptance criteria.
+
+Primary artifact:
+
+```text
+research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md
+```
+
+Status:
+
+**Completed**
+
+## S0.5-D.2 Dynamic Transition Hardening
+
+S0.5-D.2 hardened the deterministic world before intervention and benchmark
+logic are introduced.
+
+### Scientific role
+
+The purpose was to establish that the existing transition system is suitable
+as controlled experimental infrastructure.
+
+The authoritative ordinary transition remains:
+
+$$
+S_{t+1}=T(S_t,A_t)
+$$
+
+No new physical mechanism was introduced during hardening.
+
+### Durable implementation decisions
+
+The transition path follows:
+
+```text
+validate input
+    |
+    v
+compute next state
+    |
+    v
+commit state
+    |
+    v
+evaluate terminal status
+```
+
+Validation occurs before state mutation.
+
+Invalid actions therefore cannot partially mutate the world.
+
+MOVE vectors must contain finite numeric values.
+
+Configuration fields requiring integer semantics explicitly reject booleans
+rather than relying on Python's `bool` subclass relationship with `int`.
+
+The deterministic world continues to use the established kinematic baseline:
+
+$$
+p_{t+1}=p_t+v_t\Delta t
+$$
+
+D.2 deliberately does not introduce:
+
+* intervention dynamics;
+* collision physics;
+* friction;
+* acceleration mechanisms;
+* hidden benchmark variables;
+* benchmark condition labels;
+* evaluator logic;
+* concept discovery.
+
+### Verified invariants
+
+D.2 tests verify:
+
+* deterministic multi-step replay;
+* invalid-action non-mutation;
+* finite action-vector requirements;
+* entity identity preservation;
+* mass preservation;
+* position-bound preservation;
+* immutable world state;
+* immutable entity state;
+* immutable entity collections;
+* immutable relation collections;
+* NO_OP velocity preservation;
+* MOVE target-velocity semantics;
+* relation stability during ordinary actions;
+* terminal-state/reset behavior.
+
+### Verification checkpoint
+
+Full repository test suite:
+
+```text
+163 passed
+```
+
+Python compilation:
+
+```text
+passed
+```
+
+Git whitespace/error validation:
+
+```text
+git diff --check -> passed
+```
+
+### D.2 artifacts
+
+```text
+src/unknown/environment/dynamics/world.py
+tests/environment/test_world_trajectory_hardening.py
+tests/environment/test_world_invariants.py
+research/notes/S0.5_D2_EVIDENCE.md
+```
+
+### Scientific limitation
+
+D.2 establishes engineering and reproducibility properties of the current
+transition substrate.
+
+It does not establish:
+
+* intervention validity;
+* causal validity;
+* representation-failure diagnosis;
+* concept discovery;
+* transfer success;
+* scientific superiority;
+* benchmark validity;
+* novelty.
+
+### Status
+
+**Completed**
+
+---
+
+# S0.5-D.3 Authoritative Intervention Transition
+
+The next implementation stage is S0.5-D.3.
+
+The objective is to implement intervention transitions through the same
+authoritative dynamics layer rather than creating a second transition engine
+inside the public runtime.
+
+The intended transition boundary becomes:
 
 $$
 S_{t+1}=T(S_t,A_t,I_t)
 $$
 
-Ordinary actions and interventions must ultimately pass through the same authoritative dynamics rather than creating duplicate transition logic inside the public runtime.
+The initial public intervention types already defined by the schemas and
+dynamic contract are:
 
-### Intervention principle
+* SET_POSITION;
+* SET_VELOCITY;
+* REMOVE_ENTITY.
 
-Public interventions currently include:
+Their semantics must be implemented in the dynamics source of truth.
 
-* SET_POSITION
-* SET_VELOCITY
-* REMOVE_ENTITY
+D.3 must preserve:
 
-Their semantics must be implemented in the dynamics layer rather than simulated independently by the public runtime.
+* determinism;
+* validation-before-mutation;
+* public/hidden/evaluation separation;
+* reproducibility;
+* no oracle access;
+* no duplicate transition logic.
 
-### Controlled-condition principle
+D.3 is not yet implemented.
 
-Future benchmark conditions must permit paired comparisons between:
-
-* parameter failure;
-* model-family failure;
-* representation failure;
-* information-unavailable conditions.
-
-Condition labels remain hidden from UNKNOWN.
-
-### Paired-counterfactual principle
-
-Benchmark pairs must change only the intended experimental factor while controlling irrelevant variables.
-
-A paired benchmark is evidence infrastructure, not itself evidence that the desired hypothesis is true.
-
-### Hidden/evaluation boundary
-
-Benchmark conditions, hidden variables, ground-truth representations, paired-condition identities, and evaluator state remain outside the public observation interface.
-
-The simulator must never modify dynamics according to evaluator outcomes or candidate correctness.
-
-### Reproducibility
-
-For fixed environment version, configuration, seed, action sequence, and intervention sequence, the trajectory must be deterministic.
-
-Wall-clock time, uncontrolled randomness, network services, filesystem state, and process state must not influence scientific outcomes.
-
-### Research integrity
-
-S0.5-D does not establish autonomous concept discovery, representation discovery, causal correctness, transfer, superiority, or novelty.
-
-It establishes controlled infrastructure required to test those claims later.
-
-### Contract artifact
-
-Primary source of truth:
-
-`research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md`
-
-### Next milestone
-
-S0.5-D.2 — Dynamic Transition Hardening.
-
-No autonomous discovery algorithm is introduced during S0.5-D.
-
+---
 
 # Required Future Environment Conditions
 
@@ -895,13 +1023,19 @@ The project will not:
 
 **Sprint:** 0 - Scientific Foundation
 
-**Current Stage:** S0.5-C Public Observation Projection
+**Current Stage:** S0.5-D.2 Dynamic Transition Hardening
 
 **S0.5-A:** Completed
 
 **S0.5-B:** Completed
 
-**S0.5-C:** Implemented - checkpoint ready
+**S0.5-C:** Completed
+
+**S0.5-D.1:** Completed
+
+**S0.5-D.2:** Completed - checkpoint pending Git commit
+
+**S0.5-D.3:** Next
 
 **Implementation:** Active
 
@@ -911,9 +1045,9 @@ The project will not:
 
 **Research gap:** Candidate and provisional
 
-**Current verified test suite:** 147 passed
+**Current verified test suite:** 163 passed
 
-**Next milestone:** S0.5-C evidence closure, followed by dynamic environment completion and ground-truth construction.
+**Next milestone:** S0.5-D.3 authoritative intervention transition
 
 ---
 
@@ -943,6 +1077,9 @@ Research artifacts:
 * `research/notes/S0.5_DYNAMICS_CONTRACT.md`
 * `research/notes/S0.5_B_EVIDENCE.md`
 * `research/notes/S0.5_C_OBSERVATION_CONTRACT.md`
+* `research/notes/S0.5_C_EVIDENCE.md`
+* `research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md`
+* `research/notes/S0.5_D2_EVIDENCE.md`
 
 Implementation artifacts:
 
@@ -967,6 +1104,8 @@ Test artifacts:
 * `tests/environment/test_public_observation_projection.py`
 * `tests/environment/test_observation_boundary.py`
 * `tests/environment/test_observation_determinism.py`
+* `tests/environment/test_world_trajectory_hardening.py`
+* `tests/environment/test_world_invariants.py`
 
 ---
 
@@ -1026,6 +1165,14 @@ determine:
 19. No later sprint should bypass unresolved scientific kill criteria.
 20. No intervention transition mechanism should be duplicated outside the
     dynamics source of truth.
+21. Deterministic transition validation must occur before world-state mutation.
+22. Non-finite action vectors must be rejected at the dynamics boundary.
+23. Boolean values must not be accepted where integer configuration semantics
+    are required.
+24. Ordinary D.2 hardening must not introduce new physical mechanisms that
+    could confound later benchmark conditions.
+25. Multi-step deterministic replay and state-invariant tests are required
+    before intervention and benchmark-condition work proceeds.
 
 ---
 
@@ -1060,12 +1207,15 @@ proof of the research hypothesis.
 
 **S0.5-C observation projection:** Implemented and verified
 
+**S0.5-D.1 dynamic environment contract:** Completed
+
+**S0.5-D.2 dynamic transition hardening:** Implemented and verified
+
 **Synthetic benchmark dynamics:** Partially implemented; scientific benchmark
 mechanisms remain incomplete
 
 **Autonomous discovery system:** Not yet implemented
 
-**Current checkpoint:** S0.5-C documentation/evidence closure
+**Current checkpoint:** S0.5-D.2 documentation/evidence closure
 
-**Next implementation stage:** S0.5-D dynamic environment completion and
-ground-truth construction
+**Next implementation stage:** S0.5-D.3 authoritative intervention transition

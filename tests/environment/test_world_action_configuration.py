@@ -14,7 +14,7 @@ from unknown.environment.schemas.public import (
     PublicAction,
 )
 
-from tests.environment.test_deterministic_world import make_config
+from tests.helpers.environment import make_config
 
 
 def test_move_is_rejected_when_not_allowed() -> None:

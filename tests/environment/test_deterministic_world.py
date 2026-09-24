@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from tests.helpers.environment import make_config
 from unknown.environment.dynamics import (
     DeterministicWorld,
     InvalidWorldActionError,
@@ -12,46 +13,9 @@ from unknown.environment.dynamics import (
 )
 from unknown.environment.schemas.public import (
     ActionKind,
-    InterventionKind,
     PublicAction,
-    PublicEnvironmentConfig,
     PublicVector2,
 )
-
-
-def make_config(
-    *,
-    entity_count: int = 4,
-    max_steps: int = 20,
-    allowed_action_kinds: tuple[ActionKind, ...] = (
-        ActionKind.NO_OP,
-        ActionKind.MOVE,
-        ActionKind.INTERACT,
-    ),
-) -> PublicEnvironmentConfig:
-    """Create a valid configuration for deterministic-world tests."""
-    return PublicEnvironmentConfig(
-        environment_version="0.1.0",
-        schema_version="0.1.0",
-        world_width=100.0,
-        world_height=80.0,
-        max_steps=max_steps,
-        entity_count=entity_count,
-        observation_history_limit=10,
-        allowed_action_kinds=allowed_action_kinds,
-        allowed_intervention_kinds=(
-            InterventionKind.SET_POSITION,
-            InterventionKind.SET_VELOCITY,
-            InterventionKind.REMOVE_ENTITY,
-        ),
-        public_attributes=(
-            "position",
-            "velocity",
-            "mass",
-            "category",
-            "relations",
-        ),
-    )
 
 
 def test_reset_produces_initial_world_state() -> None:
@@ -348,6 +312,7 @@ def test_interact_advances_time_without_changing_physical_state() -> None:
 def test_move_requires_entity_id() -> None:
     """MOVE without a target entity is rejected."""
     world = DeterministicWorld()
+
     world.reset(
         config=make_config(),
         seed=42,
@@ -368,6 +333,7 @@ def test_move_requires_entity_id() -> None:
 def test_move_requires_vector() -> None:
     """MOVE without a movement vector is rejected."""
     world = DeterministicWorld()
+
     world.reset(
         config=make_config(),
         seed=42,
@@ -388,6 +354,7 @@ def test_move_requires_vector() -> None:
 def test_move_rejects_unknown_entity() -> None:
     """MOVE cannot target an unknown entity."""
     world = DeterministicWorld()
+
     world.reset(
         config=make_config(),
         seed=42,
@@ -409,6 +376,7 @@ def test_move_rejects_unknown_entity() -> None:
 def test_interact_requires_entity_id() -> None:
     """INTERACT without a target entity is rejected."""
     world = DeterministicWorld()
+
     world.reset(
         config=make_config(),
         seed=42,
@@ -426,6 +394,7 @@ def test_interact_requires_entity_id() -> None:
 def test_no_op_rejects_entity_id() -> None:
     """NO_OP does not accept an entity target."""
     world = DeterministicWorld()
+
     world.reset(
         config=make_config(),
         seed=42,
