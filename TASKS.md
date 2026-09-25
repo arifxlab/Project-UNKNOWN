@@ -600,6 +600,27 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 
 ---
 
+# S0.5-D.5.1 — Baseline Representation Contract
+
+- [x] Define the formal baseline representation `R₀`
+- [x] Define the public/private representation boundary
+- [x] Define baseline primitive categories
+- [x] Define the typed representation language
+- [x] Define permitted baseline operators
+- [x] Define composition constraints
+- [x] Define representation sufficiency
+- [x] Define representation-level inadequacy criteria
+- [x] Define representation extension semantics
+- [x] Define structural representation novelty
+- [x] Define baseline leakage constraints
+- [x] Perform scientific review
+
+**D.5.1 status:** COMPLETE — research specification only.
+
+---
+
+**Implementation gate:** Exact primitive/operator definitions and executable expressibility checks remain deferred to later D.5 stages.
+
 # S0.5-E - Ground Truth
 
 * [ ] Define true hidden mechanism

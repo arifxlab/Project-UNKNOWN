@@ -1386,3 +1386,13 @@ mechanisms remain incomplete
 **Current checkpoint:** S0.5-D.3 evidence/documentation closure
 
 **Next implementation stage:** S0.5-D.4 Controlled Benchmark Conditions
+
+**S0.5-D.5.1 — Baseline Representation Contract**
+
+- D.5.1 establishes `R₀` as a finite, typed, explicitly declared representation language rather than unrestricted computation over raw observations.
+- Formal structure: `R₀ = (V₀, T₀, O₀, C₀)` for vocabulary, types, operators, and composition constraints.
+- Representation sufficiency is defined through expressibility under the declared language, independently of current parameters or a single model family.
+- R1 requires a structure outside `Expressible(R₀)` while a valid extension can express it and parameter/model-family alternatives cannot repair the limitation.
+- Public/private separation remains mandatory; evaluator-private information and target abstractions cannot enter `R₀`.
+- Representation novelty is structural rather than lexical.
+- Exact primitive definitions, operator signatures, expressibility checking, equivalence checking, and complexity remain later implementation/design questions.
