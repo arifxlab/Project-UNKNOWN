@@ -567,17 +567,24 @@ Scientific boundary:
 
 S0.5-D.3 establishes controlled intervention infrastructure. It does not establish that interventions discover concepts, diagnose representation failure, validate causal explanations, establish transfer, or prove the research hypothesis.
 
-## S0.5-D.4 - Controlled Benchmark Conditions
+### S0.5-D.4 — Controlled Benchmark Conditions
 
-**Status:** NOT STARTED
+- [x] D.4.1 — Benchmark condition taxonomy
+- [x] D.4.2 — Failure-class ground truth
+- [x] D.4.3 — Public/private information boundary
+- [x] D.4.4 — Intervention-conditioned scenarios
+- [x] D.4.5 — Reproducibility and seed contract
+- [x] D.4.6 — Controls and confound prevention
+- [x] D.4.7 — Train/development/evaluation separation
+- [x] D.4.8 — Controlled benchmark contract
+- [x] D.4.9 — Scientific review gate
+- [x] D.4.9-A — Representation vocabulary and candidate contamination
+- [x] D.4.9-B — Extension complexity and parsimony
+- [x] D.4.9-C — Extension acceptance, rejection, uncertainty, and stopping
 
-Objective:
+**D.4 status:** COMPLETE — research specification only.
 
-Define and implement controlled benchmark conditions that allow representation failure to be experimentally distinguished from information-unavailable, model-family, parameter, and decoy conditions.
-
-## S0.5-D.5 - Paired Counterfactuals
-
-**Status:** NOT STARTED
+**Implementation gate:** Benchmark implementation remains deferred until the D.4 contract is reviewed against the authoritative environment/intervention implementation.
 
 ## S0.5-D.6 - Hidden/Evaluation Integration
 

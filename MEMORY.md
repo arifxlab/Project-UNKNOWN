@@ -961,6 +961,15 @@ Properties:
 * surviving entities are not reconnected automatically;
 * step index advances by one.
 
+# S0.5-D.4 — Controlled Benchmark Contract
+
+- D.4 is now conceptually complete and defines the controlled benchmark required to distinguish representation-level inadequacy from parameter failure, model-family failure, stochastic variation, and insufficient evidence.
+- R1 is structurally defined; performance improvement is evidence, not the definition of representation failure.
+- The benchmark enforces public/private separation, intervention semantics, reproducibility, train/dev/evaluation separation, anti-leakage controls, model-recovery ladder, candidate provenance, structural novelty, extension complexity controls, falsification, uncertainty, and explicit stopping budgets.
+- Candidate extensions must be evaluated separately for predictive, interventional, falsification, transfer, and complexity evidence.
+- Final evaluation must be frozen/versioned and contaminated evaluation must not be presented as clean evidence.
+- D.4 implementation remains deferred until the contract is translated into executable benchmark specifications.
+
 ## Reproducibility
 
 Intervention history is represented internally as part of the world state so
