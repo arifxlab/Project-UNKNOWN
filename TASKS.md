@@ -8,15 +8,20 @@
 
 **Started:** 2026-09-23
 
-**Implementation:** Started under S0.4 environment boundary work
+**Implementation:** Active under S0.5 environment and benchmark
+infrastructure work
 
 ---
 
 # Sprint 0 Objective
 
-Establish the scientific foundation required to determine whether Project UNKNOWN represents a meaningful and sufficiently distinct research problem before implementing the autonomous discovery system.
+Establish the scientific foundation required to determine whether Project
+UNKNOWN represents a meaningful and sufficiently distinct research problem
+before implementing the autonomous discovery system.
 
-Sprint 0 also establishes the controlled experimental environment, scientific information boundaries, formal evaluation protocol, reproducibility requirements, and architecture required for later experiments.
+Sprint 0 also establishes the controlled experimental environment, scientific
+information boundaries, formal evaluation protocol, reproducibility
+requirements, and architecture required for later experiments.
 
 ---
 
@@ -66,7 +71,8 @@ Sprint 0 also establishes the controlled experimental environment, scientific in
 
 ## Required Final Check
 
-* [ ] Perform final targeted search for essentially equivalent complete mechanisms
+* [ ] Perform final targeted search for essentially equivalent complete
+  mechanisms
 * [x] Review `research/literature/PRIOR_ART_MATRIX.md`
 * [x] Cross-check thesis against prior-art findings
 * [ ] Decide whether S0.2 can be formally closed
@@ -135,7 +141,9 @@ Sprint 0 also establishes the controlled experimental environment, scientific in
 * `research/notes/S0.3_REPRESENTATION_SPEC.md`
 * `research/notes/S0.3_EVALUATION_PROTOCOL.md`
 
-**Scientific caveat:** S0.3 establishes the current formal problem definition but does not establish novelty. The final prior-art equivalence check remains part of S0.2.
+**Scientific caveat:** S0.3 establishes the current formal problem definition
+but does not establish novelty. The final prior-art equivalence check remains
+part of S0.2.
 
 ---
 
@@ -224,9 +232,12 @@ Sprint 0 also establishes the controlled experimental environment, scientific in
 
 ## S0.4 Boundary Outcome
 
-S0.4 established the public/hidden/evaluation information boundary and the initial public runtime contract.
+S0.4 established the public/hidden/evaluation information boundary and the
+initial public runtime contract.
 
-The remaining dynamic benchmark requirements were intentionally moved into the subsequent S0.5 implementation stages rather than treating the contract shell as a completed scientific benchmark.
+The remaining dynamic benchmark requirements were intentionally moved into
+the subsequent S0.5 implementation stages rather than treating the contract
+shell as a completed scientific benchmark.
 
 **Status:** IMPLEMENTATION CHECKPOINT VERIFIED
 
@@ -242,7 +253,10 @@ The remaining dynamic benchmark requirements were intentionally moved into the s
 * `src/unknown/environment/public/runtime.py`
 * `tests/environment/`
 
-**Scientific caveat:** The environment boundary is verified, but the final scientific benchmark requires controlled dynamics, hidden mechanisms, interventions, paired conditions, evaluator-side ground truth, and transfer scenarios.
+**Scientific caveat:** The environment boundary is verified, but the final
+scientific benchmark requires controlled dynamics, hidden mechanisms,
+interventions, paired conditions, evaluator-side ground truth, and transfer
+scenarios.
 
 ---
 
@@ -321,7 +335,10 @@ The remaining dynamic benchmark requirements were intentionally moved into the s
 * Deterministic world implementation verified
 * Commit: `3fae8d8 feat: implement deterministic world dynamics`
 
-**Scientific caveat:** S0.5-B establishes deterministic world mechanics only. It does not establish hidden benchmark mechanisms, concept discovery, representation failure diagnosis, causal validity, or scientific benchmark conclusions.
+**Scientific caveat:** S0.5-B establishes deterministic world mechanics only.
+It does not establish hidden benchmark mechanisms, concept discovery,
+representation failure diagnosis, causal validity, or scientific benchmark
+conclusions.
 
 ---
 
@@ -404,7 +421,12 @@ The remaining dynamic benchmark requirements were intentionally moved into the s
 * `git diff --cached --check`: passed
 * `git diff --check`: passed
 
-**Scientific caveat:** S0.5-C establishes the public observation projection boundary and its executable tests. It does not establish autonomous concept discovery, representation-failure diagnosis, successful representation extension, causal discovery, predictive superiority, intervention validity, falsification validity, transfer validity, or benchmark-level scientific conclusions.
+**Scientific caveat:** S0.5-C establishes the public observation projection
+boundary and its executable tests. It does not establish autonomous concept
+discovery, representation-failure diagnosis, successful representation
+extension, causal discovery, predictive superiority, intervention validity,
+falsification validity, transfer validity, or benchmark-level scientific
+conclusions.
 
 ---
 
@@ -436,6 +458,8 @@ The remaining dynamic benchmark requirements were intentionally moved into the s
 
 **Status:** IN PROGRESS
 
+---
+
 ## S0.5-D.1 - Dynamic Environment Contract
 
 **Status:** COMPLETED
@@ -462,13 +486,17 @@ Artifact:
 
 * `research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md`
 
+---
+
 ## S0.5-D.2 - Dynamic Transition Hardening
 
 **Status:** COMPLETED
 
 Objective:
 
-Establish the deterministic world transition system as trustworthy experimental infrastructure before introducing intervention and benchmark-condition logic.
+Establish the deterministic world transition system as trustworthy
+experimental infrastructure before introducing intervention and
+benchmark-condition logic.
 
 Completed:
 
@@ -488,7 +516,8 @@ Completed:
 * Verified MOVE target-velocity semantics.
 * Verified relation stability during ordinary actions.
 * Verified reset after terminal state.
-* Preserved the existing kinematic transition model without introducing new physics.
+* Preserved the existing kinematic transition model without introducing new
+  physics.
 * Added dedicated transition-hardening and invariant test modules.
 * Recorded S0.5-D.2 evidence.
 
@@ -507,7 +536,12 @@ Verification:
 
 Scientific boundary:
 
-S0.5-D.2 establishes deterministic and invariant-preserving infrastructure only. It does not establish intervention validity, benchmark validity, representation-failure diagnosis, concept discovery, causal correctness, transfer success, scientific superiority, or novelty.
+S0.5-D.2 establishes deterministic and invariant-preserving infrastructure
+only. It does not establish intervention validity, benchmark validity,
+representation-failure diagnosis, concept discovery, causal correctness,
+transfer success, scientific superiority, or novelty.
+
+---
 
 ## S0.5-D.3 - Authoritative Intervention Transition
 
@@ -515,7 +549,8 @@ S0.5-D.2 establishes deterministic and invariant-preserving infrastructure only.
 
 Objective:
 
-Implement intervention transitions through the authoritative dynamics layer and preserve a single source of truth for ordinary actions and interventions.
+Implement intervention transitions through the authoritative dynamics layer
+and preserve a single source of truth for ordinary actions and interventions.
 
 Completed:
 
@@ -528,11 +563,13 @@ Completed:
 * Removed incident relations when an entity is removed.
 * Added explicit intervention history to internal reproducibility state.
 * Kept intervention history outside the public observation boundary.
-* Delegated public intervention execution to `DeterministicWorld.intervene()`.
+* Delegated public intervention execution to
+  `DeterministicWorld.intervene()`.
 * Avoided duplicate intervention transition logic in the public runtime.
 * Preserved deterministic intervention trajectories.
 * Preserved terminal lifecycle semantics.
-* Added intervention-specific tests and strengthened existing runtime/invariant/determinism tests.
+* Added intervention-specific tests and strengthened existing
+  runtime/invariant/determinism tests.
 * Recorded S0.5-D.3 evidence.
 
 Primary evidence artifact:
@@ -561,67 +598,432 @@ Verification:
 * `git diff --check`: **passed**
 * `git diff --cached --check`: **passed**
 * Working tree after implementation checkpoint: **clean**
-* Git implementation checkpoint: `af21961 feat: implement authoritative intervention transitions`
+* Git implementation checkpoint:
+  `af21961 feat: implement authoritative intervention transitions`
 
 Scientific boundary:
 
-S0.5-D.3 establishes controlled intervention infrastructure. It does not establish that interventions discover concepts, diagnose representation failure, validate causal explanations, establish transfer, or prove the research hypothesis.
+S0.5-D.3 establishes controlled intervention infrastructure. It does not
+establish that interventions discover concepts, diagnose representation
+failure, validate causal explanations, establish transfer, or prove the
+research hypothesis.
 
-### S0.5-D.4 — Controlled Benchmark Conditions
+---
 
-- [x] D.4.1 — Benchmark condition taxonomy
-- [x] D.4.2 — Failure-class ground truth
-- [x] D.4.3 — Public/private information boundary
-- [x] D.4.4 — Intervention-conditioned scenarios
-- [x] D.4.5 — Reproducibility and seed contract
-- [x] D.4.6 — Controls and confound prevention
-- [x] D.4.7 — Train/development/evaluation separation
-- [x] D.4.8 — Controlled benchmark contract
-- [x] D.4.9 — Scientific review gate
-- [x] D.4.9-A — Representation vocabulary and candidate contamination
-- [x] D.4.9-B — Extension complexity and parsimony
-- [x] D.4.9-C — Extension acceptance, rejection, uncertainty, and stopping
+## S0.5-D.4 - Controlled Benchmark Contract
+
+### D.4.1 - Benchmark Condition Taxonomy
+
+* [x] Define R0 representation-sufficient control
+* [x] Define P1 parameter-failure condition
+* [x] Define M1 model-family-failure condition
+* [x] Define R1 representation-level inadequacy condition
+* [x] Define N1 non-identifiable / insufficient-evidence condition
+* [x] Define X1 stochastic/noise condition
+* [x] Define T1 unseen-context transfer condition
+* [x] Define condition versus evaluation-dimension distinction
+
+### D.4.2 - Failure-Class Ground Truth
+
+* [x] Define evaluator-side ground truth
+* [x] Define representation sufficiency status
+* [x] Define model-family sufficiency status
+* [x] Define parameter sufficiency status
+* [x] Define identifiability status
+* [x] Define noise classification
+* [x] Define intervention-identifiability status
+* [x] Define extension existence
+* [x] Define transfer status
+* [x] Prevent circular definition of R1
+
+### D.4.3 - Public/Private Information Boundary
+
+* [x] Define public environmental information
+* [x] Define agent-derived information
+* [x] Define hidden environment-private information
+* [x] Define evaluator-private information
+* [x] Define forbidden diagnostic information
+* [x] Define leakage threats
+* [x] Preserve evaluator isolation
+
+### D.4.4 - Intervention-Conditioned Scenarios
+
+* [x] Define baseline observation scenario
+* [x] Define direct state perturbation
+* [x] Define entity-removal intervention
+* [x] Define repeated intervention
+* [x] Define contrastive intervention
+* [x] Define reversal/restoration scenario
+* [x] Define cross-context intervention
+* [x] Define controlled intervention mode
+* [x] Define active intervention mode
+* [x] Define intervention budgets
+* [x] Define matched counterfactual requirements
+* [x] Define independent versus sequential trials
+
+### D.4.5 - Reproducibility and Seed Contract
+
+* [x] Define world reproducibility
+* [x] Define trajectory reproducibility
+* [x] Define intervention reproducibility
+* [x] Define scenario reproducibility
+* [x] Define evaluation reproducibility
+* [x] Define experiment identity
+* [x] Define seed hierarchy
+* [x] Separate agent RNG from environment/evaluator RNG
+* [x] Define matched-trial controls
+* [x] Define exact replay versus semantic replay
+* [x] Define experiment manifest requirements
+* [x] Define reproducibility failure as benchmark integrity failure
+
+### D.4.6 - Controls and Confound Prevention
+
+* [x] Define metadata leakage controls
+* [x] Define identity leakage controls
+* [x] Define temporal shortcut controls
+* [x] Define distributional shortcut controls
+* [x] Define intervention confound controls
+* [x] Define initialization controls
+* [x] Define evaluator isolation
+* [x] Define implementation-artifact controls
+* [x] Define train/dev/evaluation contamination controls
+* [x] Define simulator invariants
+* [x] Define negative controls
+* [x] Define positive controls
+* [x] Define ablation controls
+* [x] Define permutation/control-feature strategy
+* [x] Define cross-condition controls
+* [x] Define model-only recovery ladder
+* [x] Define representation-extension ladder
+
+### D.4.7 - Train/Development/Evaluation Separation
+
+* [x] Define seed separation
+* [x] Define configuration separation
+* [x] Define mechanism separation
+* [x] Define composition separation
+* [x] Define structural separation
+* [x] Define representation-extension separation
+* [x] Define evaluation categories E0-E5
+* [x] Define structural contamination rule
+* [x] Define candidate-library contamination controls
+* [x] Define unseen-context transfer requirements
+* [x] Define evaluation freeze
+
+### D.4.8 - Controlled Benchmark Contract
+
+* [x] Define benchmark object model
+* [x] Define condition contract
+* [x] Define scenario contract
+* [x] Define trial contract
+* [x] Define world contract
+* [x] Define public interaction history
+* [x] Define evaluator-private record
+* [x] Define evidence categories
+* [x] Define candidate extension protocol
+* [x] Define scientific claim boundary
+
+### D.4.9 - Scientific Review Gate
+
+* [x] Review circularity
+* [x] Review parameter/model-family confounds
+* [x] Review candidate memorization
+* [x] Review identity leakage
+* [x] Review timing leakage
+* [x] Review intervention leakage
+* [x] Review evaluator/environment disagreement
+* [x] Review benchmark bias
+* [x] Review extension capacity
+* [x] Review endless extension risk
+* [x] Review evaluator scoring leakage
+* [x] Review lucky single-trial success
+
+### D.4.9-A - Representation Vocabulary and Candidate Contamination
+
+* [x] Define primitive vocabulary V0
+* [x] Define learned/development vocabulary V1
+* [x] Define evaluation-generated vocabulary V2
+* [x] Define structural novelty
+* [x] Define candidate provenance
+* [x] Define candidate contamination classes
+
+### D.4.9-B - Extension Complexity and Parsimony
+
+* [x] Separate expressiveness from complexity
+* [x] Define candidate quality dimensions
+* [x] Define complexity dimensions
+* [x] Define minimal extension control
+* [x] Define correct extension control
+* [x] Define over-complete extension control
+* [x] Define irrelevant/random extension control
+* [x] Define nested extension ladders
+
+### D.4.9-C - Extension Acceptance, Rejection, Uncertainty, and Stopping
+
+* [x] Define ACCEPT
+* [x] Define REJECT
+* [x] Define UNCERTAIN
+* [x] Define CONTINUE
+* [x] Define acceptance evidence profile
+* [x] Define alternative-explanation requirement
+* [x] Define falsification-first principle
+* [x] Define information-seeking intervention requirement
+* [x] Define maximum intervention budget
+* [x] Define maximum candidate-extension budget
+* [x] Define maximum evaluation-step budget
+* [x] Define maximum model-revision-cycle budget
 
 **D.4 status:** COMPLETE — research specification only.
 
-**Implementation gate:** Benchmark implementation remains deferred until the D.4 contract is reviewed against the authoritative environment/intervention implementation.
-
-## S0.5-D.6 - Hidden/Evaluation Integration
-
-**Status:** NOT STARTED
-
-## S0.5-D.7 - Leakage + Reproducibility Audit
-
-**Status:** NOT STARTED
-
-## S0.5-D.8 - Evidence + Checkpoint
-
-**Status:** NOT STARTED
+**Implementation gate:** Benchmark implementation remains deferred until the
+D.4 contract is translated into executable benchmark specifications and
+reviewed against the authoritative environment/intervention implementation.
 
 ---
 
-# S0.5-D.5.1 — Baseline Representation Contract
+# S0.5-D.5 - Executable Benchmark Specification
 
-- [x] Define the formal baseline representation `R₀`
-- [x] Define the public/private representation boundary
-- [x] Define baseline primitive categories
-- [x] Define the typed representation language
-- [x] Define permitted baseline operators
-- [x] Define composition constraints
-- [x] Define representation sufficiency
-- [x] Define representation-level inadequacy criteria
-- [x] Define representation extension semantics
-- [x] Define structural representation novelty
-- [x] Define baseline leakage constraints
-- [x] Perform scientific review
+## S0.5-D.5.1 - Baseline Representation Contract
+
+* [x] Define the formal baseline representation `R₀`
+* [x] Define the public/private representation boundary
+* [x] Define baseline primitive categories
+* [x] Define the typed representation language
+* [x] Define permitted baseline operators
+* [x] Define composition constraints
+* [x] Define representation sufficiency
+* [x] Define representation-level inadequacy criteria
+* [x] Define representation extension semantics
+* [x] Define structural representation novelty
+* [x] Define baseline leakage constraints
+* [x] Perform scientific review
 
 **D.5.1 status:** COMPLETE — research specification only.
 
+**Primary artifact:**
+
+* `research/notes/S0.5_D5_1_BASELINE_REPRESENTATION.md`
+
+**Evidence artifact:**
+
+* `research/notes/S0.5_D5_1_EVIDENCE.md`
+
+**Implementation gate:** Exact primitive/operator definitions, executable
+expressibility checks, structural equivalence checks, and
+representation-specific complexity remain deferred to later D.5 stages.
+
 ---
 
-**Implementation gate:** Exact primitive/operator definitions and executable expressibility checks remain deferred to later D.5 stages.
+## S0.5-D.5.2 - World-Family Design
+
+* [x] Define the core typed relational dynamical world family
+* [x] Separate world families from benchmark conditions
+* [x] Define shared world-generation machinery
+* [x] Define public observation and private world state boundaries
+* [x] Define R0 control construction
+* [x] Define P1 parameter-failure construction
+* [x] Define M1 model-family-failure construction
+* [x] Define constructive R1 representation collision
+* [x] Establish why downstream model-family expansion cannot repair a clean
+  R1 collision
+* [x] Define N1 non-identifiability construction
+* [x] Define X1 stochastic/noise construction
+* [x] Define T1 structural transfer evaluation
+* [x] Define matched-world and anti-shortcut requirements
+* [x] Define intervention compatibility
+* [x] Define world-family reproducibility requirements
+* [x] Perform minimality analysis
+* [x] Perform scientific review
+
+**D.5.2 status:** COMPLETE — research specification only.
+
+**Primary artifact:**
+
+* `research/notes/S0.5_D5_2_WORLD_FAMILY_DESIGN.md`
+
+**Evidence artifact:**
+
+* `research/notes/S0.5_D5_2_EVIDENCE.md`
+
+**Implementation gate:** Concrete world schemas, dynamics, hidden mechanisms,
+condition generators, R1 witnesses, intervention scenarios, candidate
+extension execution, and benchmark instance counts remain deferred to D.5.3
+and later executable stages.
+
+---
+
+## S0.5-D.5.3 - Controlled Failure Construction
+
+**Status:** NEXT
+
+* [ ] Define executable R0 control construction
+* [ ] Define executable P1 parameter-failure construction
+* [ ] Define executable M1 model-family-failure construction
+* [ ] Define executable R1 representation-failure construction
+* [ ] Define executable N1 non-identifiability construction
+* [ ] Define executable X1 stochastic/noise construction
+* [ ] Define explicit R1 witness pairs
+* [ ] Define public recoverability tests
+* [ ] Define parameter-only recovery tests
+* [ ] Define model-family-only recovery tests
+* [ ] Define representation-extension recovery tests
+* [ ] Define paired counterfactual construction
+* [ ] Define negative controls
+* [ ] Define positive controls
+* [ ] Define anti-shortcut construction requirements
+* [ ] Define failure-condition generation rules
+* [ ] Define evaluator-private ground-truth construction
+* [ ] Define condition reproducibility
+* [ ] Perform scientific review
+* [ ] Record D.5.3 evidence
+
+**Implementation gate:** No autonomous discovery implementation begins until
+the executable failure conditions and their evaluator-side ground truth are
+scientifically specified.
+
+---
+
+## S0.5-D.5.4 - Extension Algebra
+
+**Status:** NOT STARTED
+
+* [ ] Define executable R0 primitive vocabulary
+* [ ] Define primitive types
+* [ ] Define operator signatures
+* [ ] Define composition grammar
+* [ ] Define composition-depth constraints
+* [ ] Define candidate extension operators
+* [ ] Define structural equivalence
+* [ ] Define canonical representation form
+* [ ] Define representation serialization
+* [ ] Define candidate complexity
+* [ ] Define candidate execution safety
+* [ ] Define extension validity constraints
+* [ ] Define extension closure properties
+* [ ] Define extension algebra tests
+
+---
+
+## S0.5-D.5.5 - Candidate Extension Protocol
+
+**Status:** NOT STARTED
+
+* [ ] Define candidate provenance schema
+* [ ] Define failure-trigger linkage
+* [ ] Define candidate generation boundary
+* [ ] Define candidate hypothesis structure
+* [ ] Define candidate prediction structure
+* [ ] Define intervention prediction structure
+* [ ] Define falsification conditions
+* [ ] Define candidate acceptance criteria
+* [ ] Define candidate rejection criteria
+* [ ] Define candidate uncertainty state
+* [ ] Define candidate stopping policy
+* [ ] Define candidate contamination controls
+* [ ] Define candidate budget
+* [ ] Define candidate-library management
+* [ ] Define candidate comparison protocol
+
+---
+
+## S0.5-D.5.6 - Minimum Falsification Suite
+
+**Status:** NOT STARTED
+
+* [ ] Define prediction falsification tests
+* [ ] Define intervention falsification tests
+* [ ] Define counterfactual falsification tests
+* [ ] Define transfer falsification tests
+* [ ] Define complexity/parsimony rejection tests
+* [ ] Define decoy-candidate rejection tests
+* [ ] Define shuffled/permuted controls
+* [ ] Define alternative-explanation tests
+* [ ] Define negative-result recording
+* [ ] Define falsification evidence schema
+
+---
+
+## S0.5-D.5.7 - Benchmark Matrix
+
+**Status:** NOT STARTED
+
+* [ ] Define condition matrix
+* [ ] Define world-family matrix
+* [ ] Define train/development/evaluation matrix
+* [ ] Define structural novelty matrix
+* [ ] Define transfer matrix
+* [ ] Define intervention matrix
+* [ ] Define baseline matrix
+* [ ] Define candidate-extension matrix
+* [ ] Define ablation matrix
+* [ ] Define benchmark instance counts
+* [ ] Define seed allocation
+* [ ] Define evaluation freeze
+* [ ] Define benchmark versioning
+
+---
+
+# S0.5-D.6 - Hidden/Evaluation Integration
+
+**Status:** NOT STARTED
+
+* [ ] Implement hidden dynamic state
+* [ ] Implement evaluator-private state
+* [ ] Implement evaluator-side ground truth
+* [ ] Implement condition assignment outside UNKNOWN
+* [ ] Implement ground-truth representation records
+* [ ] Implement evaluation records
+* [ ] Enforce evaluator isolation
+* [ ] Prevent evaluator information from entering public runtime
+* [ ] Test public/private integration
+* [ ] Test evaluator isolation
+
+---
+
+# S0.5-D.7 - Leakage and Reproducibility Audit
+
+**Status:** NOT STARTED
+
+* [ ] Execute static leakage audit
+* [ ] Execute runtime leakage audit
+* [ ] Execute serialization leakage audit
+* [ ] Execute exception/log leakage audit
+* [ ] Execute metadata leakage audit
+* [ ] Execute seed leakage audit
+* [ ] Execute timing/episode-length leakage audit
+* [ ] Execute evaluator-isolation audit
+* [ ] Verify deterministic replay
+* [ ] Verify matched-trial reproducibility
+* [ ] Verify experiment manifests
+* [ ] Record reproducibility evidence
+* [ ] Record leakage evidence
+
+---
+
+# S0.5-D.8 - Evidence and Checkpoint
+
+**Status:** NOT STARTED
+
+* [ ] Run full environment test suite
+* [ ] Run full repository test suite
+* [ ] Run static compilation
+* [ ] Run formatting/whitespace validation
+* [ ] Review scientific evidence
+* [ ] Review negative results
+* [ ] Review benchmark controls
+* [ ] Record S0.5-D evidence
+* [ ] Update MEMORY.md
+* [ ] Update TASKS.md
+* [ ] Commit checkpoint
+* [ ] Push checkpoint
+* [ ] Verify remote state
+* [ ] Confirm clean working tree
+
+---
 
 # S0.5-E - Ground Truth
+
+**Status:** NOT STARTED
 
 * [ ] Define true hidden mechanism
 * [ ] Define hidden variables
@@ -634,11 +1036,11 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [ ] Define ground-truth evaluator representation
 * [ ] Define equivalence criteria for recovered representations
 
-**Status:** NOT STARTED
-
 ---
 
 # S0.6 - Baselines
+
+**Status:** NOT STARTED
 
 * [ ] Fixed representation baseline
 * [ ] Parameter-optimization baseline
@@ -653,11 +1055,11 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [ ] Define search budgets
 * [ ] Define information-access parity
 
-**Status:** NOT STARTED
-
 ---
 
 # S0.7 - Evaluation
+
+**Status:** NOT STARTED
 
 * [ ] Define representation-failure diagnosis metrics
 * [ ] Define explanatory metrics
@@ -674,11 +1076,11 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [ ] Define confidence intervals or uncertainty reporting
 * [ ] Define failure-case reporting
 
-**Status:** NOT STARTED
-
 ---
 
 # S0.8 - Intervention Protocol
+
+**Status:** NOT STARTED
 
 * [ ] Define intervention types
 * [ ] Define intervention selection
@@ -690,11 +1092,11 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [ ] Define intervention reproducibility
 * [ ] Define intervention coverage requirements
 
-**Status:** NOT STARTED
-
 ---
 
 # S0.9 - Reproducibility
+
+**Status:** NOT STARTED
 
 * [ ] Define random seed policy
 * [ ] Define experiment configuration
@@ -708,11 +1110,11 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [ ] Define deterministic replay
 * [ ] Define artifact manifest
 
-**Status:** NOT STARTED
-
 ---
 
 # S0.10 - Kill Criteria
+
+**Status:** NOT STARTED
 
 * [ ] Validate prior-art kill criterion
 * [ ] Validate baseline kill criterion
@@ -725,11 +1127,11 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [ ] Validate complexity/search-budget kill criterion
 * [ ] Validate negative-result preservation criterion
 
-**Status:** NOT STARTED
-
 ---
 
 # S0.11 - Architecture
+
+**Status:** PROVISIONAL
 
 * [ ] Establish research architecture
 * [ ] Establish experiment architecture
@@ -741,8 +1143,6 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [ ] Confirm public/hidden/evaluation separation
 * [ ] Confirm evaluator isolation
 * [ ] Confirm reproducibility architecture
-
-**Status:** PROVISIONAL
 
 ---
 
@@ -779,6 +1179,13 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [x] S0.5-D.2 evidence
 * [x] S0.5-D.3 authoritative intervention transition
 * [x] S0.5-D.3 evidence
+* [x] S0.5-D.4 controlled benchmark contract
+* [x] S0.5-D.4 evidence
+* [x] S0.5-D.5.1 baseline representation contract
+* [x] S0.5-D.5.1 evidence
+* [x] S0.5-D.5.2 world-family design
+* [x] S0.5-D.5.2 evidence
+* [ ] S0.5-D.5.3 controlled failure construction
 * [ ] Final Sprint 0 evidence package
 
 **Status:** IN PROGRESS
@@ -786,6 +1193,8 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 ---
 
 # S0.13 - Final Sprint Review
+
+**Status:** NOT STARTED
 
 * [ ] Review scientific question
 * [ ] Review prior art
@@ -802,11 +1211,11 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [ ] Verify benchmark leakage controls
 * [ ] Review negative-result policy
 
-**Status:** NOT STARTED
-
 ---
 
 # S0.14 - Git Checkpoint
+
+**Status:** NOT STARTED
 
 * [ ] Check working tree
 * [ ] Review changed files
@@ -819,8 +1228,6 @@ S0.5-D.3 establishes controlled intervention infrastructure. It does not establi
 * [ ] Verify remote state
 * [ ] Confirm clean working tree
 * [ ] Record Sprint 0 checkpoint
-
-**Status:** NOT STARTED
 
 ---
 
@@ -850,8 +1257,8 @@ Sprint 0 is complete only when:
 * [ ] Git push succeeds
 * [ ] Working tree is clean
 
----
 
 # Future Sprint Placeholder
 
-No future sprint should be started until Sprint 0 reaches its Definition of Done.
+No future sprint should be started until Sprint 0 reaches its Definition of
+Done.

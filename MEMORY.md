@@ -256,20 +256,20 @@ Accept / Reject / Revise
 
 The working environment abstraction is:
 
-```text
+```
 E = (S, A, O, T)
 ```
 
 where:
 
-* `S` is the environment state space;
-* `A` is the action space;
-* `O` is the observation interface;
-* `T` is the environment transition process.
+* S is the environment state space;
+* A is the action space;
+* O is the observation interface;
+* T is the environment transition process.
 
 A representation is treated as a transformation of available observations:
 
-```text
+```
 r_t = R(o_<=t)
 ```
 
@@ -290,11 +290,11 @@ discovery.
 
 A representation extension is treated conceptually as:
 
-```text
+```
 R' = R + C
 ```
 
-where `C` is a candidate representation component.
+where C is a candidate representation component.
 
 A candidate must carry enough provenance to determine:
 
@@ -366,7 +366,7 @@ S0.4 established the first executable public/hidden/evaluation boundary.
 
 Implemented schema layers:
 
-```text
+```
 src/unknown/environment/schemas/
     public.py
     hidden.py
@@ -375,13 +375,13 @@ src/unknown/environment/schemas/
 
 Implemented public runtime:
 
-```text
+```
 src/unknown/environment/public/runtime.py
 ```
 
 Public runtime operations:
 
-```text
+```
 reset(config, seed)
 observe()
 step(action)
@@ -396,9 +396,7 @@ state to the deterministic dynamics layer.
 The final scientific benchmark mechanisms remain outside the S0.4 boundary
 and are being implemented incrementally through S0.5.
 
----
-
-# S0.4 Runtime Boundary
+## S0.4 Runtime Boundary
 
 The public runtime must not:
 
@@ -413,11 +411,9 @@ The public runtime must not:
 
 Automated tests verify these constraints.
 
----
+## S0.4 Schema Layers
 
-# S0.4 Schema Layers
-
-## Public Schemas
+### Public Schemas
 
 Represent information legitimately available to UNKNOWN.
 
@@ -432,7 +428,7 @@ Examples include:
 * public environment configuration;
 * public environment metadata.
 
-## Hidden Schemas
+### Hidden Schemas
 
 Represent benchmark-side truth.
 
@@ -445,7 +441,7 @@ Examples include:
 * benchmark condition;
 * hidden episode records.
 
-## Evaluation Schemas
+### Evaluation Schemas
 
 Represent evaluator-side measurements.
 
@@ -487,13 +483,11 @@ The contract defines:
 
 Primary artifact:
 
-```text
+```
 research/notes/S0.5_DYNAMICS_CONTRACT.md
 ```
 
-Status:
-
-**Completed**
+Status: **Completed**
 
 ---
 
@@ -503,7 +497,7 @@ S0.5-B implemented the first executable deterministic synthetic world.
 
 Implementation:
 
-```text
+```
 src/unknown/environment/dynamics/
     __init__.py
     models.py
@@ -532,14 +526,14 @@ The dynamics layer remains the internal simulation source of truth.
 
 Primary tests:
 
-```text
+```
 tests/environment/test_deterministic_world.py
 tests/environment/test_world_action_configuration.py
 ```
 
 S0.5-B verification state:
 
-```text
+```
 Full environment suite: 116 passed
 Static compilation: passed
 git diff --check: passed
@@ -547,11 +541,11 @@ git diff --check: passed
 
 Checkpoint:
 
-```text
+```
 3fae8d8 feat: implement deterministic world dynamics
 ```
 
-Scientific limitation:
+**Scientific limitation:**
 
 S0.5-B establishes deterministic mechanics only. It does not establish
 concept discovery, representation failure diagnosis, causal correctness,
@@ -566,13 +560,13 @@ becomes information legitimately available to UNKNOWN.
 
 Primary contract:
 
-```text
+```
 research/notes/S0.5_C_OBSERVATION_CONTRACT.md
 ```
 
 Implementation:
 
-```text
+```
 src/unknown/environment/observation/
     __init__.py
     projection.py
@@ -580,13 +574,13 @@ src/unknown/environment/observation/
 
 Runtime integration:
 
-```text
+```
 src/unknown/environment/public/runtime.py
 ```
 
 The resulting architecture is:
 
-```text
+```
 UNKNOWN
    |
    v
@@ -649,39 +643,39 @@ The observation projector is intended to be:
 
 ## S0.5-C Boundary Principle
 
-> The simulator may know more than UNKNOWN. The evaluator may know more than
-> UNKNOWN. Neither may silently communicate that additional knowledge through
-> the public observation channel.
+The simulator may know more than UNKNOWN. The evaluator may know more than
+UNKNOWN. Neither may silently communicate that additional knowledge through
+the public observation channel.
 
 ## S0.5-C Verification
 
 Focused observation projection tests:
 
-```text
+```
 25 passed
 ```
 
 Leakage contract:
 
-```text
+```
 19 passed
 ```
 
 Full repository suite:
 
-```text
+```
 147 passed
 ```
 
 Runtime compilation:
 
-```text
+```
 passed
 ```
 
 Diff validation:
 
-```text
+```
 git diff --cached --check  -> passed
 git diff --check           -> passed
 ```
@@ -725,6 +719,8 @@ The environment must support controlled experimental distinction among:
 The environment must not assume that a prediction failure implies
 representation failure.
 
+---
+
 ## S0.5-D.1 Dynamic Environment Contract
 
 S0.5-D.1 established the formal contract for dynamic environment completion.
@@ -748,13 +744,13 @@ The contract defines:
 
 Primary artifact:
 
-```text
+```
 research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md
 ```
 
-Status:
+Status: **Completed**
 
-**Completed**
+---
 
 ## S0.5-D.2 Dynamic Transition Hardening
 
@@ -768,9 +764,9 @@ as controlled experimental infrastructure.
 
 The authoritative ordinary transition remains:
 
-$$
-S_{t+1}=T(S_t,A_t)
-$$
+```
+S_{t+1} = T(S_t, A_t)
+```
 
 No new physical mechanism was introduced during hardening.
 
@@ -778,7 +774,7 @@ No new physical mechanism was introduced during hardening.
 
 The transition path follows:
 
-```text
+```
 validate input
     |
     v
@@ -798,13 +794,13 @@ Invalid actions therefore cannot partially mutate the world.
 MOVE vectors must contain finite numeric values.
 
 Configuration fields requiring integer semantics explicitly reject booleans
-rather than relying on Python's `bool` subclass relationship with `int`.
+rather than relying on Python's bool subclass relationship with int.
 
 The deterministic world continues to use the established kinematic baseline:
 
-$$
-p_{t+1}=p_t+v_t\Delta t
-$$
+```
+p_{t+1} = p_t + v_t * Δt
+```
 
 D.2 deliberately does not introduce:
 
@@ -840,25 +836,25 @@ D.2 tests verify:
 
 Full repository test suite:
 
-```text
+```
 163 passed
 ```
 
 Python compilation:
 
-```text
+```
 passed
 ```
 
 Git whitespace/error validation:
 
-```text
+```
 git diff --check -> passed
 ```
 
 ### D.2 artifacts
 
-```text
+```
 src/unknown/environment/dynamics/world.py
 tests/environment/test_world_trajectory_hardening.py
 tests/environment/test_world_invariants.py
@@ -881,18 +877,14 @@ It does not establish:
 * benchmark validity;
 * novelty.
 
-### Status
-
-**Completed**
-
 ---
 
-# S0.5-D.3 Authoritative Intervention Transition
+## S0.5-D.3 Authoritative Intervention Transition
 
 S0.5-D.3 established interventions as an authoritative deterministic
 transition mechanism in the dynamics source of truth.
 
-## Scientific role
+### Scientific role
 
 The objective was to provide controlled world-state modification for later
 experiments without creating a second transition engine inside the public
@@ -900,7 +892,7 @@ runtime.
 
 The resulting architecture is:
 
-```text
+```
 Public Intervention
         |
         v
@@ -918,11 +910,11 @@ Public Observation Projection
 
 The dynamics layer remains the single source of truth.
 
-## Intervention semantics
+### Intervention semantics
 
-### SET_POSITION
+#### SET_POSITION
 
-`SET_POSITION` directly replaces the selected entity position.
+SET_POSITION directly replaces the selected entity position.
 
 Properties:
 
@@ -936,9 +928,9 @@ Properties:
 
 Out-of-bounds positions are rejected rather than silently clamped.
 
-### SET_VELOCITY
+#### SET_VELOCITY
 
-`SET_VELOCITY` directly replaces the selected entity velocity.
+SET_VELOCITY directly replaces the selected entity velocity.
 
 Properties:
 
@@ -949,9 +941,9 @@ Properties:
 * no ordinary kinematic timestep is applied;
 * step index advances by one.
 
-### REMOVE_ENTITY
+#### REMOVE_ENTITY
 
-`REMOVE_ENTITY` removes the selected entity.
+REMOVE_ENTITY removes the selected entity.
 
 Properties:
 
@@ -961,16 +953,7 @@ Properties:
 * surviving entities are not reconnected automatically;
 * step index advances by one.
 
-# S0.5-D.4 — Controlled Benchmark Contract
-
-- D.4 is now conceptually complete and defines the controlled benchmark required to distinguish representation-level inadequacy from parameter failure, model-family failure, stochastic variation, and insufficient evidence.
-- R1 is structurally defined; performance improvement is evidence, not the definition of representation failure.
-- The benchmark enforces public/private separation, intervention semantics, reproducibility, train/dev/evaluation separation, anti-leakage controls, model-recovery ladder, candidate provenance, structural novelty, extension complexity controls, falsification, uncertainty, and explicit stopping budgets.
-- Candidate extensions must be evaluated separately for predictive, interventional, falsification, transfer, and complexity evidence.
-- Final evaluation must be frozen/versioned and contaminated evaluation must not be presented as clean evidence.
-- D.4 implementation remains deferred until the contract is translated into executable benchmark specifications.
-
-## Reproducibility
+### Reproducibility
 
 Intervention history is represented internally as part of the world state so
 that controlled intervention sequences form part of reproducible simulation
@@ -978,13 +961,13 @@ state.
 
 Intervention history is not exposed through the public observation.
 
-## Validation
+### Validation
 
 Interventions follow validation-before-mutation semantics.
 
 Invalid intervention inputs do not partially mutate world state.
 
-## Terminal behavior
+### Terminal behavior
 
 Interventions use the normal world lifecycle.
 
@@ -993,7 +976,7 @@ reached, the world becomes terminal according to the existing terminal rule.
 
 No separate intervention-specific terminal mechanism was introduced.
 
-## Determinism
+### Determinism
 
 Identical configuration, seed, initial state, action sequence, and
 intervention sequence must produce identical trajectories.
@@ -1001,7 +984,7 @@ intervention sequence must produce identical trajectories.
 No evaluator state, hidden benchmark labels, or expected outcomes are used
 by the intervention transition mechanism.
 
-## Invariants
+### Invariants
 
 The implementation verifies preservation of relevant state invariants:
 
@@ -1011,14 +994,14 @@ The implementation verifies preservation of relevant state invariants:
 * position bounds;
 * velocity/position preservation according to intervention type;
 * relation preservation for non-removal interventions;
-* incident-relation removal for `REMOVE_ENTITY`;
+* incident-relation removal for REMOVE_ENTITY;
 * immutability of state structures.
 
-## Verification
+### Verification
 
 Final implementation verification:
 
-```text
+```
 Full repository suite: 178 passed
 Python compilation: passed
 git diff --check: passed
@@ -1026,27 +1009,27 @@ git diff --check: passed
 
 Git implementation checkpoint:
 
-```text
+```
 af21961 feat: implement authoritative intervention transitions
 ```
 
 Remote:
 
-```text
+```
 origin/main
 ```
 
 The implementation checkpoint was pushed successfully.
 
-## Evidence
+### Evidence
 
 Primary evidence artifact:
 
-```text
+```
 research/notes/S0.5_D3_EVIDENCE.md
 ```
 
-## Scientific limitation
+### Scientific limitation
 
 D.3 establishes intervention infrastructure.
 
@@ -1067,11 +1050,339 @@ The intervention mechanism is infrastructure for those later experiments.
 
 ---
 
+## S0.5-D.4 Controlled Benchmark Contract
+
+S0.5-D.4 defines the controlled scientific benchmark required to distinguish
+representation-level inadequacy from parameter failure, model-family failure,
+stochastic variation, and insufficient evidence.
+
+### Scientific condition taxonomy
+
+The benchmark distinguishes:
+
+* R0 - Representation-Sufficient Control;
+* P1 - Parameter Failure;
+* M1 - Model-Family Failure;
+* R1 - Representation-Level Inadequacy;
+* N1 - Non-Identifiable / Insufficient-Evidence;
+* X1 - Noise / Stochastic Variation;
+* T1 - Unseen-Context Transfer.
+
+R1 is structurally defined. Performance improvement is evidence for an R1
+diagnosis, not the definition of R1 itself.
+
+### Required controls
+
+The benchmark contract establishes:
+
+* public/private information separation;
+* intervention semantics;
+* reproducibility and seed hierarchy;
+* train/development/evaluation separation;
+* anti-leakage controls;
+* evaluator isolation;
+* model-recovery ladder;
+* candidate provenance;
+* structural novelty requirements;
+* extension complexity and parsimony controls;
+* falsification;
+* uncertainty;
+* explicit experimental stopping budgets;
+* benchmark freezing/versioning.
+
+### Scientific evidence dimensions
+
+Candidate extensions are evaluated separately for:
+
+* predictive evidence;
+* interventional evidence;
+* falsification evidence;
+* transfer evidence;
+* representation-recovery evidence;
+* complexity.
+
+No single aggregate score is treated as sufficient evidence.
+
+### Scientific boundary
+
+D.4 establishes a research specification.
+
+It does not establish that an executable benchmark has already demonstrated
+representation discovery or scientific validity.
+
+### Status
+
+Completed — research specification only.
+
+Primary conceptual artifacts include the D.4 controlled benchmark contract,
+evidence record, scientific review, and supporting benchmark design notes.
+
+---
+
+## S0.5-D.5.1 Baseline Representation Contract
+
+D.5.1 establishes the baseline representation R₀ as a finite, typed,
+explicitly declared representation language rather than unrestricted
+computation over raw observations.
+
+The formal structure is:
+
+```
+R₀ = (V₀, T₀, O₀, C₀)
+```
+
+where:
+
+* V₀ is the primitive vocabulary;
+* T₀ is the type system;
+* O₀ is the permitted operator set;
+* C₀ is the composition constraint set.
+
+Representation sufficiency is defined through expressibility under the
+declared representation language rather than through the performance of a
+single model.
+
+R1 requires:
+
+* a relevant structure outside Expressible(R₀);
+* a valid representation extension capable of expressing it;
+* failure of permitted parameter changes to repair the limitation;
+* failure of permitted model-family expansion downstream of R₀ to repair the
+  limitation.
+
+The public/private information boundary remains mandatory.
+
+Representation novelty is structural rather than lexical.
+
+Exact primitive definitions, operator signatures, executable expressibility
+checking, equivalence checking, and representation-specific complexity remain
+later implementation/design questions.
+
+### Status
+
+Completed — research specification only.
+
+Primary artifact:
+
+```
+research/notes/S0.5_D5_1_BASELINE_REPRESENTATION.md
+```
+
+Evidence artifact:
+
+```
+research/notes/S0.5_D5_1_EVIDENCE.md
+```
+
+---
+
+## S0.5-D.5.2 World-Family Design
+
+D.5.2 defines the world-family machinery required to construct controlled
+benchmark conditions without implementing each failure class as a separate
+environment.
+
+### Core decision
+
+UNKNOWN uses a typed relational dynamical world as the core benchmark family.
+
+Shared world-generation machinery produces controlled instances for:
+
+* R0;
+* P1;
+* M1;
+* R1;
+* N1;
+* X1.
+
+Benchmark conditions are configurations or structural instantiations of shared
+world-family machinery rather than unrelated condition-specific environments.
+
+### Core world ontology
+
+The conceptual world contains:
+
+```
+World
+├── Entities
+├── Observable state
+├── Hidden state
+├── Relations
+├── Dynamics
+├── Action transition rules
+├── Intervention transition rules
+├── Observation function
+├── Noise process
+└── Ground-truth mechanism
+```
+
+The conceptual world state is:
+
+```
+W = (E, X, R, F, G, I, ξ)
+```
+
+where the components represent entities, state, relations, dynamics,
+observation, intervention, and stochastic processes.
+
+### Public/private boundary
+
+UNKNOWN receives public observations and observable action/intervention
+outcomes.
+
+The evaluator may retain private information such as:
+
+* hidden state;
+* mechanism configuration;
+* condition class;
+* ground-truth representation;
+* canonical extension;
+* benchmark seed;
+* expected failure class.
+
+Those evaluator-side values must not cross the public interaction boundary.
+
+### R1 constructive definition
+
+A clean R1 witness is based on a representation collision.
+
+For public histories H₁ and H₂:
+
+```
+R₀(H₁) = R₀(H₂)
+```
+
+while a scientifically relevant required outcome differs:
+
+```
+Y(H₁) != Y(H₂)
+```
+
+and an allowed extension separates the histories:
+
+```
+R₁(H₁) != R₁(H₂)
+```
+
+The model family operates downstream of R₀ and therefore cannot recover a
+distinction that R₀ has already collapsed.
+
+This establishes representation failure as an information/representation
+collision rather than simply a model-performance failure.
+
+### Higher-order relation decision
+
+A higher-order relation remains a useful candidate construction, but relation
+arity alone is not considered evidence of representation novelty.
+
+A candidate is scientifically relevant only when its required distinction
+lies outside the declared R₀ grammar and composition limits.
+
+### Model-family boundary
+
+Model-family expansion must remain downstream of the fixed R₀ representation
+boundary.
+
+A model that bypasses R₀ and directly consumes raw public observations would
+invalidate the intended distinction between representation failure and
+model-family failure.
+
+### N1
+
+N1 represents genuine non-identifiability or insufficient evidence.
+
+Multiple materially different explanations may remain compatible with the
+permitted public evidence.
+
+N1 must not be converted into R1 merely because a hidden variable exists.
+
+### X1
+
+X1 isolates stochastic variation from systematic representation inadequacy.
+
+The representation and model family remain sufficient while stochastic
+variation produces observation or prediction variability.
+
+### T1
+
+T1 evaluates whether a discovered extension transfers to structurally unseen
+contexts.
+
+T1 is an evaluation dimension rather than a separate representation-failure
+class.
+
+### Transfer family
+
+One core world family is sufficient for controlled failure construction.
+
+A structurally distinct held-out family is required for strong transfer and
+reusability evaluation.
+
+### Anti-shortcut controls
+
+The benchmark must control for:
+
+* entity identity;
+* entity ordering;
+* entity count;
+* timing;
+* intervention availability;
+* superficial distributions;
+* initialization;
+* metadata;
+* condition labels;
+* evaluation leakage;
+* implementation artifacts.
+
+Matched-world construction and overlapping superficial distributions are
+required where scientifically appropriate.
+
+### Intervention compatibility
+
+Interventions remain evidence-generating mechanisms rather than automatic proof
+of representation discovery.
+
+The benchmark must distinguish independent matched trials from sequential
+intervention trials where effects accumulate.
+
+### Reproducibility
+
+World-family generation must support deterministic reconstruction through
+explicit experiment identity, configuration, and seed hierarchy.
+
+UNKNOWN must not receive benchmark truth through seed or configuration
+channels.
+
+### Status
+
+Completed — research specification only.
+
+Primary artifact:
+
+```
+research/notes/S0.5_D5_2_WORLD_FAMILY_DESIGN.md
+```
+
+Evidence artifact:
+
+```
+research/notes/S0.5_D5_2_EVIDENCE.md
+```
+
+### Implementation gate
+
+Concrete world schemas, hidden mechanisms, condition generators, executable
+R1 witnesses, intervention scenarios, representation-language execution,
+candidate extension machinery, and benchmark instance counts remain deferred
+to D.5.3 and later executable stages.
+
+---
+
 # Required Future Environment Conditions
 
 The eventual benchmark must distinguish:
 
-```text
+```
 Information Unavailable
         |
         v
@@ -1087,11 +1398,11 @@ Parameter Failure
 These conditions must be constructed so that evaluator-side ground truth can
 determine whether the relevant information is:
 
-1. absent from the observation interface;
-2. present but absent from the current representation;
-3. present in the representation but inaccessible to a restricted model
-   family;
-4. representable and model-accessible but poorly parameterized.
+* absent from the observation interface;
+* present but absent from the current representation;
+* present in the representation but inaccessible to a restricted model
+  family;
+* representable and model-accessible but poorly parameterized.
 
 Paired counterfactual conditions are required.
 
@@ -1167,93 +1478,106 @@ The project will not:
 
 **Sprint:** 0 - Scientific Foundation
 
-**Current Stage:** S0.5-D.3 Authoritative Intervention Transition
+**Current Stage:** S0.5-D.5.2 World-Family Design
 
-**S0.5-A:** Completed
+| Stage | Status |
+|---|---|
+| S0.5-A | Completed |
+| S0.5-B | Completed |
+| S0.5-C | Completed |
+| S0.5-D.1 | Completed |
+| S0.5-D.2 | Completed |
+| S0.5-D.3 | Completed |
+| S0.5-D.4 | Completed — research specification only |
+| S0.5-D.5.1 | Completed — research specification only |
+| S0.5-D.5.2 | Completed — research specification only |
+| S0.5-D.5.3 | Next |
 
-**S0.5-B:** Completed
+Implementation: Active
 
-**S0.5-C:** Completed
+Scientific benchmark: Not yet complete
 
-**S0.5-D.1:** Completed
+Novelty claim: None
 
-**S0.5-D.2:** Completed
+Research gap: Candidate and provisional
 
-**S0.5-D.3:** Completed
+Current verified implementation test suite: **178 passed**
 
-**S0.5-D.4:** Next
-
-**Implementation:** Active
-
-**Scientific benchmark:** Not yet complete
-
-**Novelty claim:** None
-
-**Research gap:** Candidate and provisional
-
-**Current verified test suite:** 178 passed
-
-**Next milestone:** S0.5-D.4 Controlled Benchmark Conditions
+Next milestone: **S0.5-D.5.3 Controlled Failure Construction**
 
 ---
 
 # Current Artifacts
 
-Core documentation:
+## Core documentation
 
-* `README.md`
-* `RULES.md`
-* `PRD.md`
-* `DESIGN.md`
-* `ARCHITECTURE.md`
-* `RESEARCH_THESIS.md`
-* `TASKS.md`
-* `MEMORY.md`
+```
+README.md
+RULES.md
+PRD.md
+DESIGN.md
+ARCHITECTURE.md
+RESEARCH_THESIS.md
+TASKS.md
+MEMORY.md
+```
 
-Research artifacts:
+## Research artifacts
 
-* `research/literature/PRIOR_ART_MATRIX.md`
-* `research/notes/S0.3_RESEARCH_GAP.md`
-* `research/notes/S0.3_REPRESENTATION_SPEC.md`
-* `research/notes/S0.3_EVALUATION_PROTOCOL.md`
-* `research/notes/S0.4_SYNTHETIC_ENVIRONMENT.md`
-* `research/notes/S0.4_ENVIRONMENT_SCHEMA.md`
-* `research/notes/S0.4_LEAKAGE_AUDIT.md`
-* `research/notes/S0.4_EVIDENCE.md`
-* `research/notes/S0.5_DYNAMICS_CONTRACT.md`
-* `research/notes/S0.5_B_EVIDENCE.md`
-* `research/notes/S0.5_C_OBSERVATION_CONTRACT.md`
-* `research/notes/S0.5_C_EVIDENCE.md`
-* `research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md`
-* `research/notes/S0.5_D2_EVIDENCE.md`
-* `research/notes/S0.5_D3_EVIDENCE.md`
+```
+research/literature/PRIOR_ART_MATRIX.md
+research/notes/S0.3_RESEARCH_GAP.md
+research/notes/S0.3_REPRESENTATION_SPEC.md
+research/notes/S0.3_EVALUATION_PROTOCOL.md
+research/notes/S0.4_SYNTHETIC_ENVIRONMENT.md
+research/notes/S0.4_ENVIRONMENT_SCHEMA.md
+research/notes/S0.4_LEAKAGE_AUDIT.md
+research/notes/S0.4_EVIDENCE.md
+research/notes/S0.5_DYNAMICS_CONTRACT.md
+research/notes/S0.5_B_EVIDENCE.md
+research/notes/S0.5_C_OBSERVATION_CONTRACT.md
+research/notes/S0.5_C_EVIDENCE.md
+research/notes/S0.5_D_DYNAMIC_ENVIRONMENT_CONTRACT.md
+research/notes/S0.5_D2_EVIDENCE.md
+research/notes/S0.5_D3_EVIDENCE.md
+research/notes/S0.5_D4_CONTROLLED_BENCHMARK_CONTRACT.md
+research/notes/S0.5_D4_EVIDENCE.md
+research/notes/S0.5_D5_1_BASELINE_REPRESENTATION.md
+research/notes/S0.5_D5_1_EVIDENCE.md
+research/notes/S0.5_D5_2_WORLD_FAMILY_DESIGN.md
+research/notes/S0.5_D5_2_EVIDENCE.md
+```
 
-Implementation artifacts:
+## Implementation artifacts
 
-* `src/unknown/environment/schemas/public.py`
-* `src/unknown/environment/schemas/hidden.py`
-* `src/unknown/environment/schemas/evaluation.py`
-* `src/unknown/environment/public/runtime.py`
-* `src/unknown/environment/dynamics/models.py`
-* `src/unknown/environment/dynamics/world.py`
-* `src/unknown/environment/observation/projection.py`
+```
+src/unknown/environment/schemas/public.py
+src/unknown/environment/schemas/hidden.py
+src/unknown/environment/schemas/evaluation.py
+src/unknown/environment/public/runtime.py
+src/unknown/environment/dynamics/models.py
+src/unknown/environment/dynamics/world.py
+src/unknown/environment/observation/projection.py
+```
 
-Test artifacts:
+## Test artifacts
 
-* `tests/environment/test_public_schemas.py`
-* `tests/environment/test_hidden_schemas.py`
-* `tests/environment/test_evaluation_schemas.py`
-* `tests/environment/test_boundary_contract.py`
-* `tests/environment/test_public_runtime.py`
-* `tests/environment/test_leakage_contract.py`
-* `tests/environment/test_deterministic_world.py`
-* `tests/environment/test_world_action_configuration.py`
-* `tests/environment/test_public_observation_projection.py`
-* `tests/environment/test_observation_boundary.py`
-* `tests/environment/test_observation_determinism.py`
-* `tests/environment/test_world_trajectory_hardening.py`
-* `tests/environment/test_world_invariants.py`
-* `tests/environment/test_world_interventions.py`
+```
+tests/environment/test_public_schemas.py
+tests/environment/test_hidden_schemas.py
+tests/environment/test_evaluation_schemas.py
+tests/environment/test_boundary_contract.py
+tests/environment/test_public_runtime.py
+tests/environment/test_leakage_contract.py
+tests/environment/test_deterministic_world.py
+tests/environment/test_world_action_configuration.py
+tests/environment/test_public_observation_projection.py
+tests/environment/test_observation_boundary.py
+tests/environment/test_observation_determinism.py
+tests/environment/test_world_trajectory_hardening.py
+tests/environment/test_world_invariants.py
+tests/environment/test_world_interventions.py
+```
 
 ---
 
@@ -1283,61 +1607,79 @@ determine:
 
 # Durable Decisions
 
-1. No unsupported novelty claim is permitted.
-2. Representation failure must be distinguished from information unavailable,
-   model-family failure, and parameter failure.
-3. Hidden ground truth must remain evaluator-only during discovery.
-4. Representation extensions must carry provenance and testable hypotheses.
-5. Prediction alone cannot establish concept discovery.
-6. Intervention, falsification, and unseen-context transfer are required parts
-   of the intended validation protocol.
-7. False candidates and negative results are scientifically necessary.
-8. The environment must support paired counterfactual controls.
-9. The public runtime must remain isolated from hidden and evaluation schemas.
-10. The deterministic world is the internal simulation source of truth.
-11. Public observations must be produced through an explicit projection
-    boundary.
-12. Public observation projection must not automatically expose arbitrary
-    internal fields.
-13. Internal mass and semantic category are private under the current
-    observation contract.
-14. Derived quantities are not primitive observations unless explicitly
-    promoted by a future contract.
-15. Observation identifiers, ordering, and timestamps must be deterministic
-    and independent of hidden benchmark semantics.
-16. The current observation projector is not a scientific discovery mechanism.
-17. Dynamic leakage auditing must occur after benchmark dynamics exist.
-18. Sprint 0 cannot close until its full Definition of Done is satisfied.
-19. No later sprint should bypass unresolved scientific kill criteria.
-20. No intervention transition mechanism should be duplicated outside the
-    dynamics source of truth.
-21. Deterministic transition validation must occur before world-state mutation.
-22. Non-finite action vectors must be rejected at the dynamics boundary.
-23. Boolean values must not be accepted where integer configuration semantics
-    are required.
-24. Ordinary D.2 hardening must not introduce new physical mechanisms that
-    could confound later benchmark conditions.
-25. Multi-step deterministic replay and state-invariant tests are required
-    before intervention and benchmark-condition work proceeds.
-26. Interventions are authoritative dynamics transitions, not ordinary policy
-    actions.
-27. `SET_POSITION` directly replaces position and does not apply an ordinary
-    kinematic timestep.
-28. `SET_VELOCITY` directly replaces velocity and does not apply an ordinary
-    kinematic timestep.
-29. `REMOVE_ENTITY` removes all incident relations without automatic
-    reconnection.
-30. Intervention transitions increment the world step index by one.
-31. Intervention history belongs to internal reproducibility state and is not
-    part of the public observation.
-32. Out-of-bounds `SET_POSITION` interventions are rejected rather than
-    silently clamped.
-33. Public intervention execution delegates to the authoritative dynamics
-    layer.
-34. D.3 does not constitute evidence of concept discovery, causal validity,
-    transfer success, benchmark validity, or novelty.
-35. The next implementation stage is controlled benchmark-condition design,
-    not autonomous discovery implementation.
+* No unsupported novelty claim is permitted.
+* Representation failure must be distinguished from information unavailable,
+  model-family failure, and parameter failure.
+* Hidden ground truth must remain evaluator-only during discovery.
+* Representation extensions must carry provenance and testable hypotheses.
+* Prediction alone cannot establish concept discovery.
+* Intervention, falsification, and unseen-context transfer are required parts
+  of the intended validation protocol.
+* False candidates and negative results are scientifically necessary.
+* The environment must support paired counterfactual controls.
+* The public runtime must remain isolated from hidden and evaluation schemas.
+* The deterministic world is the internal simulation source of truth.
+* Public observations must be produced through an explicit projection
+  boundary.
+* Public observation projection must not automatically expose arbitrary
+  internal fields.
+* Internal mass and semantic category are private under the current
+  observation contract.
+* Derived quantities are not primitive observations unless explicitly
+  promoted by a future contract.
+* Observation identifiers, ordering, and timestamps must be deterministic
+  and independent of hidden benchmark semantics.
+* The current observation projector is not a scientific discovery mechanism.
+* Dynamic leakage auditing must occur after benchmark dynamics exist.
+* Sprint 0 cannot close until its full Definition of Done is satisfied.
+* No later sprint should bypass unresolved scientific kill criteria.
+* No intervention transition mechanism should be duplicated outside the
+  dynamics source of truth.
+* Deterministic transition validation must occur before world-state mutation.
+* Non-finite action vectors must be rejected at the dynamics boundary.
+* Boolean values must not be accepted where integer configuration semantics
+  are required.
+* Ordinary D.2 hardening must not introduce new physical mechanisms that
+  could confound later benchmark conditions.
+* Multi-step deterministic replay and state-invariant tests are required
+  before intervention and benchmark-condition work proceeds.
+* Interventions are authoritative dynamics transitions, not ordinary policy
+  actions.
+* SET_POSITION directly replaces position and does not apply an ordinary
+  kinematic timestep.
+* SET_VELOCITY directly replaces velocity and does not apply an ordinary
+  kinematic timestep.
+* REMOVE_ENTITY removes all incident relations without automatic
+  reconnection.
+* Intervention transitions increment the world step index by one.
+* Intervention history belongs to internal reproducibility state and is not
+  part of the public observation.
+* Out-of-bounds SET_POSITION interventions are rejected rather than
+  silently clamped.
+* Public intervention execution delegates to the authoritative dynamics
+  layer.
+* D.3 does not constitute evidence of concept discovery, causal validity,
+  transfer success, benchmark validity, or novelty.
+* The next implementation stage is controlled benchmark-condition design,
+  not autonomous discovery implementation.
+* D.4 defines the controlled benchmark scientifically but does not by itself
+  constitute executable benchmark evidence.
+* R0 is a finite, typed, explicitly declared representation language rather
+  than unrestricted computation over raw observations.
+* R1 is defined constructively through representation collisions under R0.
+* Model-family expansion must remain downstream of the fixed R0 boundary.
+* A higher-order relation is a candidate construction, not a definition of
+  representation novelty.
+* Shared world-family machinery must generate benchmark conditions rather
+  than separate condition-specific environments.
+* Structural transfer requires a held-out structurally distinct world
+  family.
+* N1 must remain distinct from R1 and must represent genuine
+  non-identifiability or insufficient evidence.
+* X1 isolates stochastic variation from systematic representation
+  inadequacy.
+* D.5.2 is a research specification only; executable failure construction
+  remains deferred to D.5.3 and later stages.
 
 ---
 
@@ -1354,45 +1696,52 @@ proof of the research hypothesis.
 
 # Current Status
 
-**Research question:** Provisional
+| Item | Status |
+|---|---|
+| Research question | Provisional |
+| Research gap | Candidate |
+| Novelty claim | None |
+| S0.2 prior-art status | Near completion |
+| S0.3 formalization | Completed provisionally |
+| S0.4 environment boundary | Implemented and verified |
+| S0.5-A dynamics contract | Completed |
+| S0.5-B deterministic world | Implemented and verified |
+| S0.5-C observation projection | Implemented and verified |
+| S0.5-D.1 dynamic environment contract | Completed |
+| S0.5-D.2 dynamic transition hardening | Implemented and verified |
+| S0.5-D.3 authoritative intervention transition | Implemented and verified |
+| S0.5-D.4 controlled benchmark contract | Completed — research specification |
+| S0.5-D.5.1 baseline representation contract | Completed — research specification |
+| S0.5-D.5.2 world-family design | Completed — research specification |
+| Synthetic benchmark dynamics | Partially implemented; scientific benchmark mechanisms remain incomplete |
+| Autonomous discovery system | Not yet implemented |
 
-**Research gap:** Candidate
+**Current checkpoint:** S0.5-D.5.2 World-Family Design
 
-**Novelty claim:** None
+**Next research stage:** S0.5-D.5.3 Controlled Failure Construction
 
-**S0.2 prior-art status:** Near completion
+**Next implementation stage:** Deferred until D.5.3 research/design decisions
+are sufficiently specified
 
-**S0.3 formalization:** Completed provisionally
+**Working tree requirement:** Clean after the D.5.2 checkpoint commit
 
-**S0.4 environment boundary:** Implemented and verified
+---
 
-**S0.5-A dynamics contract:** Completed
+# Final Scientific Position
 
-**S0.5-B deterministic world:** Implemented and verified
+Project UNKNOWN currently has a provisional research question and candidate
+research boundary.
 
-**S0.5-C observation projection:** Implemented and verified
+The project does not currently claim:
 
-**S0.5-D.1 dynamic environment contract:** Completed
+* novelty;
+* successful concept discovery;
+* successful representation discovery;
+* causal discovery;
+* transfer success;
+* benchmark superiority;
+* scientific superiority.
 
-**S0.5-D.2 dynamic transition hardening:** Implemented and verified
-
-**S0.5-D.3 authoritative intervention transition:** Implemented and verified
-
-**Synthetic benchmark dynamics:** Partially implemented; scientific benchmark
-mechanisms remain incomplete
-
-**Autonomous discovery system:** Not yet implemented
-
-**Current checkpoint:** S0.5-D.3 evidence/documentation closure
-
-**Next implementation stage:** S0.5-D.4 Controlled Benchmark Conditions
-
-**S0.5-D.5.1 — Baseline Representation Contract**
-
-- D.5.1 establishes `R₀` as a finite, typed, explicitly declared representation language rather than unrestricted computation over raw observations.
-- Formal structure: `R₀ = (V₀, T₀, O₀, C₀)` for vocabulary, types, operators, and composition constraints.
-- Representation sufficiency is defined through expressibility under the declared language, independently of current parameters or a single model family.
-- R1 requires a structure outside `Expressible(R₀)` while a valid extension can express it and parameter/model-family alternatives cannot repair the limitation.
-- Public/private separation remains mandatory; evaluator-private information and target abstractions cannot enter `R₀`.
-- Representation novelty is structural rather than lexical.
-- Exact primitive definitions, operator signatures, expressibility checking, equivalence checking, and complexity remain later implementation/design questions.
+The next scientific objective is to construct controlled failure cases that
+can rigorously separate parameter failure, model-family failure, and
+representation-level inadequacy under the R0 representation contract.
