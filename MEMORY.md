@@ -1378,6 +1378,45 @@ to D.5.3 and later executable stages.
 
 ---
 
+## S0.5-D.5.3.1 Model-Family / Representation Boundary
+
+D.5.3.1 sharpens the boundary between model-family expansion and
+representation extension in preparation for controlled failure construction.
+
+### Core decisions
+
+* Model family is defined as a class of admissible mappings over a fixed
+  representation closure.
+* Model-family expansion may change mapping capability but may not introduce
+  new representational information.
+* The baseline representation closure is generated from frozen V₀/T₀/O₀/C₀
+  under explicit semantic-equivalence rules.
+* Unrestricted computation over raw observations is outside R₀.
+* Expressibility is distinct from UNKNOWN discoverability — a distinction
+  being expressible under R₀ does not imply UNKNOWN will find it.
+* R1 remains constructively established through an R₀ collision:
+  R₀(H₁) = R₀(H₂) while required outcomes differ.
+* Representation extension changes the admissible representation closure;
+  internal model computation does not automatically constitute an extension.
+* The R₀ closure must be frozen before final UNKNOWN evaluation and cannot
+  be adapted based on UNKNOWN performance.
+
+### Scientific role
+
+This subsection exists to prevent a specific confound: a sufficiently
+expressive model family silently reintroducing representational information
+that R₀ was defined to exclude. Freezing the R₀ closure prior to evaluation,
+and defining model-family expansion strictly downstream of that closure,
+keeps the R1 vs. M1 distinction well-posed.
+
+### Status
+
+Completed — research specification only. Executable expressibility checking,
+closure generation, and semantic-equivalence rule implementation remain
+deferred to later D.5.3 sub-stages.
+
+---
+
 # Required Future Environment Conditions
 
 The eventual benchmark must distinguish:
@@ -1478,7 +1517,7 @@ The project will not:
 
 **Sprint:** 0 - Scientific Foundation
 
-**Current Stage:** S0.5-D.5.2 World-Family Design
+**Current Stage:** S0.5-D.5.3.1 Model-Family / Representation Boundary
 
 | Stage | Status |
 |---|---|
@@ -1491,7 +1530,8 @@ The project will not:
 | S0.5-D.4 | Completed — research specification only |
 | S0.5-D.5.1 | Completed — research specification only |
 | S0.5-D.5.2 | Completed — research specification only |
-| S0.5-D.5.3 | Next |
+| S0.5-D.5.3.1 | Completed — research specification only |
+| S0.5-D.5.3.2 | Next |
 
 Implementation: Active
 
@@ -1503,7 +1543,7 @@ Research gap: Candidate and provisional
 
 Current verified implementation test suite: **178 passed**
 
-Next milestone: **S0.5-D.5.3 Controlled Failure Construction**
+Next milestone: **S0.5-D.5.3.2 (or later) Controlled Failure Construction**
 
 ---
 
@@ -1680,6 +1720,19 @@ determine:
   inadequacy.
 * D.5.2 is a research specification only; executable failure construction
   remains deferred to D.5.3 and later stages.
+* Model family is defined as a class of admissible mappings over a fixed
+  representation closure.
+* Model-family expansion may change mapping capability but may not
+  introduce new representational information.
+* The baseline representation closure is generated from frozen
+  V₀/T₀/O₀/C₀ under explicit semantic-equivalence rules.
+* Unrestricted computation over raw observations is outside R₀.
+* Expressibility under R₀ is distinct from UNKNOWN discoverability.
+* Representation extension changes the admissible representation closure;
+  internal model computation does not automatically constitute an
+  extension.
+* The R₀ closure must be frozen before final UNKNOWN evaluation and cannot
+  be adapted from UNKNOWN performance.
 
 ---
 
@@ -1713,17 +1766,18 @@ proof of the research hypothesis.
 | S0.5-D.4 controlled benchmark contract | Completed — research specification |
 | S0.5-D.5.1 baseline representation contract | Completed — research specification |
 | S0.5-D.5.2 world-family design | Completed — research specification |
+| S0.5-D.5.3.1 model-family / representation boundary | Completed — research specification |
 | Synthetic benchmark dynamics | Partially implemented; scientific benchmark mechanisms remain incomplete |
 | Autonomous discovery system | Not yet implemented |
 
-**Current checkpoint:** S0.5-D.5.2 World-Family Design
+**Current checkpoint:** S0.5-D.5.3.1 Model-Family / Representation Boundary
 
-**Next research stage:** S0.5-D.5.3 Controlled Failure Construction
+**Next research stage:** S0.5-D.5.3.2 (or later) Controlled Failure Construction
 
 **Next implementation stage:** Deferred until D.5.3 research/design decisions
 are sufficiently specified
 
-**Working tree requirement:** Clean after the D.5.2 checkpoint commit
+**Working tree requirement:** Clean after the D.5.3.1 checkpoint commit
 
 ---
 

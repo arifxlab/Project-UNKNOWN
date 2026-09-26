@@ -852,9 +852,34 @@ and later executable stages.
 
 ---
 
+### S0.5-D.5.3.1 — Model-Family Semantics & Recovery Capability Boundary
+
+**Status:** COMPLETED
+
+* [x] Define model family as admissible mapping class over fixed representation.
+* [x] Establish model-family invariant.
+* [x] Define baseline representation closure.
+* [x] Establish frozen pre-UNKNOWN closure policy.
+* [x] Reject performance-defined representation boundaries.
+* [x] Reject arbitrary depth as sufficient novelty criterion.
+* [x] Prohibit unrestricted computation over raw observations.
+* [x] Separate expressibility from discoverability.
+* [x] Establish semantic-equivalence requirement.
+* [x] Separate internal computation from representation extension.
+* [x] Define P1 / M1 / R1 recovery boundaries.
+* [x] Define constructive R1 representation-collision witness.
+* [x] Establish model-family bypass invalidation rules.
+* [x] Establish anti-circularity controls.
+* [x] Identify deferred executable-specification questions.
+* [x] Close D.5.3.1 research contract.
+
+**D.5.3.1 status:** COMPLETE — research specification only.
+
+---
+
 ## S0.5-D.5.3 - Controlled Failure Construction
 
-**Status:** NEXT
+**Status:** IN PROGRESS
 
 * [ ] Define executable R0 control construction
 * [ ] Define executable P1 parameter-failure construction
@@ -880,6 +905,10 @@ and later executable stages.
 **Implementation gate:** No autonomous discovery implementation begins until
 the executable failure conditions and their evaluator-side ground truth are
 scientifically specified.
+
+### Next
+
+* [ ] S0.5-D.5.3.2 — P1 Parameter-Failure Construction
 
 ---
 
@@ -1185,6 +1214,7 @@ scientifically specified.
 * [x] S0.5-D.5.1 evidence
 * [x] S0.5-D.5.2 world-family design
 * [x] S0.5-D.5.2 evidence
+* [x] S0.5-D.5.3.1 model-family semantics & recovery capability boundary
 * [ ] S0.5-D.5.3 controlled failure construction
 * [ ] Final Sprint 0 evidence package
 
