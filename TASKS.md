@@ -928,9 +928,40 @@ scientifically specified.
 * [x] Define deferred noisy/stochastic P1 variants.
 * [x] Close P1 research/design contract.
 
+### S0.5-D.5.3.3 — M1 Model-Family Failure Construction
+
+* [x] Define M1 model-family failure semantics.
+* [x] Define model-family closure and expressibility.
+* [x] Separate structural expressibility from empirical performance.
+* [x] Define constructive expressibility witnesses.
+* [x] Define finite-domain expressibility requirements.
+* [x] Define the unchanged-R₀ invariant.
+* [x] Prohibit raw-observation bypass.
+* [x] Separate parameter changes from model-family changes.
+* [x] Define the canonical Typed Functional Dynamics world family.
+* [x] Define canonical M₀ bounded affine dynamics.
+* [x] Define canonical M₁ bounded interaction/quadratic dynamics.
+* [x] Define domain-richness requirements.
+* [x] Define M1/P1 boundary.
+* [x] Define M1/R1 boundary.
+* [x] Define M1/N1 boundary.
+* [x] Define M1/X1 boundary.
+* [x] Define parameter-only negative controls.
+* [x] Define representation-extension negative controls.
+* [x] Define passive and active M1 modes.
+* [x] Define discriminative intervention evidence.
+* [x] Define held-out M1 validation.
+* [x] Define cross-context validation.
+* [x] Define model-family ladder and escalation limits.
+* [x] Define minimal sufficient model-family principle.
+* [x] Preserve uncertainty as a valid outcome.
+* [x] Define anti-leakage requirements.
+* [x] Inherit reproducibility requirements.
+* [x] Complete M1 research/design contract.
+
 ### Next
 
-* [ ] S0.5-D.5.3.3 — M1 Model-Family Failure Construction
+* [ ] S0.5-D.5.4 — Extension Algebra
 
 ---
 
@@ -1238,6 +1269,7 @@ scientifically specified.
 * [x] S0.5-D.5.2 evidence
 * [x] S0.5-D.5.3.1 model-family semantics & recovery capability boundary
 * [x] S0.5-D.5.3.2 P1 parameter-failure construction
+* [x] S0.5-D.5.3.3 M1 model-family failure construction
 * [ ] S0.5-D.5.3 controlled failure construction
 * [ ] Final Sprint 0 evidence package
 

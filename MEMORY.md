@@ -1463,6 +1463,74 @@ generalization testing remain deferred to later D.5.3 sub-stages.
 
 ---
 
+## S0.5-D.5.3.3 M1 Model-Family Failure Construction
+
+D.5.3.3 defines the controlled M1 (Model-Family Failure) condition required
+to cleanly separate model-family inadequacy from parameter failure and
+representation-level inadequacy.
+
+### Core decisions
+
+* M1 is structurally defined as a condition where the baseline
+  representation R₀ is sufficient, the selected model family M₀ is
+  insufficient, parameter revision within M₀ cannot recover the true
+  mapping, and a predefined richer model family M₁ can recover the mapping
+  over the unchanged R₀.
+* Model-family identity is defined by the admissible mapping class rather
+  than model name, implementation, parameter count, model size, or
+  empirical performance.
+* Model-family closure is used to distinguish P1, M1, and R1: P1 has the
+  target mapping inside Closure(M₀,R₀); M1 has it outside Closure(M₀,R₀)
+  but inside Closure(M₁,R₀); R1 requires an expanded representation R₁.
+* Empirical model failure is evidence but does not define M1; canonical M1
+  conditions require an evaluator-verifiable expressibility boundary.
+* The canonical M1 world family is Typed Functional Dynamics with public
+  state/action/outcome and deterministic noise-free transitions.
+* Canonical M₀ is bounded affine dynamics; canonical M₁ is bounded
+  interaction/quadratic dynamics.
+* M1 model-family expansion must preserve the exact same R₀ and may not
+  access raw observations, hidden state, evaluator truth, or introduce new
+  representational information.
+* M1 benchmark construction requires sufficient domain richness so the
+  richer target mapping does not collapse into a simpler mapping under the
+  permitted protocol.
+* M1 must be separated from P1, R1, N1, and X1 using parameter-only
+  controls, representation controls, identifiability checks, and
+  deterministic canonical conditions.
+* M1 validation uses held-out observations and, where applicable,
+  interventional and cross-context evidence.
+* Model-family ladders and escalation budgets are frozen before final
+  evaluation; UNKNOWN may not create unlimited model-family expansions.
+* When nested model families are available, the minimal predefined
+  sufficient family is recorded for parsimony.
+* UNKNOWN may terminate with UNCERTAIN when evidence cannot distinguish
+  model-family failure from competing explanations.
+* Evaluator-private model-family truth, expressibility witnesses, condition
+  labels, and target mappings must never cross the public UNKNOWN boundary.
+
+### Scientific role
+
+M1 exists to give the benchmark a clean second negative-adjacent control,
+complementary to P1: a condition where the correct answer is "expand the
+model family within the frozen representation, do not extend the
+representation." Without a rigorously separated M1, any performance gain
+from a richer model could be mistakenly attributed to representation
+discovery. Defining M1 through closure membership (target mapping outside
+Closure(M₀,R₀) but inside Closure(M₁,R₀)) rather than through observed model
+performance keeps the M1/R1 boundary well-posed, and defining model-family
+identity by admissible mapping class rather than model size or
+implementation prevents a large or differently-implemented model within the
+same class from being mistaken for genuine model-family expansion.
+
+### Status
+
+Completed — research specification only. Executable M1 world-instance
+generation, M₀/M₁ closure construction, expressibility-boundary
+verification, and held-out/cross-context generalization testing remain
+deferred to later D.5.3 sub-stages.
+
+---
+
 # Required Future Environment Conditions
 
 The eventual benchmark must distinguish:
@@ -1563,7 +1631,7 @@ The project will not:
 
 **Sprint:** 0 - Scientific Foundation
 
-**Current Stage:** S0.5-D.5.3.2 P1 Parameter-Failure Construction
+**Current Stage:** S0.5-D.5.3.3 M1 Model-Family Failure Construction
 
 | Stage | Status |
 |---|---|
@@ -1578,7 +1646,8 @@ The project will not:
 | S0.5-D.5.2 | Completed — research specification only |
 | S0.5-D.5.3.1 | Completed — research specification only |
 | S0.5-D.5.3.2 | Completed — research specification only |
-| S0.5-D.5.3.3 | Next |
+| S0.5-D.5.3.3 | Completed — research specification only |
+| S0.5-D.5.3.4 | Next |
 
 Implementation: Active
 
@@ -1590,7 +1659,7 @@ Research gap: Candidate and provisional
 
 Current verified implementation test suite: **178 passed**
 
-Next milestone: **S0.5-D.5.3.3 (or later) Controlled Failure Construction**
+Next milestone: **S0.5-D.5.3.4 (or later) Controlled Failure Construction**
 
 ---
 
@@ -1798,6 +1867,41 @@ determine:
   cannot rely on parameter memorization.
 * Evaluator-private parameter truth and identifiability information must
   never enter UNKNOWN's public boundary.
+* M1 is structurally defined as a condition where R₀ is sufficient, M₀ is
+  insufficient, parameter revision within M₀ cannot recover the true
+  mapping, and a predefined richer model family M₁ can recover the mapping
+  over the unchanged R₀.
+* Model-family identity is defined by the admissible mapping class rather
+  than model name, implementation, parameter count, model size, or
+  empirical performance.
+* Model-family closure distinguishes P1, M1, and R1: P1 has the target
+  mapping inside Closure(M₀,R₀); M1 has it outside Closure(M₀,R₀) but
+  inside Closure(M₁,R₀); R1 requires an expanded representation R₁.
+* Empirical model failure is evidence but does not define M1; canonical M1
+  conditions require an evaluator-verifiable expressibility boundary.
+* The canonical M1 world family is Typed Functional Dynamics with public
+  state/action/outcome and deterministic noise-free transitions.
+* Canonical M₀ is bounded affine dynamics; canonical M₁ is bounded
+  interaction/quadratic dynamics.
+* M1 model-family expansion must preserve the exact same R₀ and may not
+  access raw observations, hidden state, evaluator truth, or introduce new
+  representational information.
+* M1 benchmark construction requires sufficient domain richness so the
+  richer target mapping does not collapse into a simpler mapping under the
+  permitted protocol.
+* M1 must be separated from P1, R1, N1, and X1 using parameter-only
+  controls, representation controls, identifiability checks, and
+  deterministic canonical conditions.
+* M1 validation uses held-out observations and, where applicable,
+  interventional and cross-context evidence.
+* Model-family ladders and escalation budgets are frozen before final
+  evaluation; UNKNOWN may not create unlimited model-family expansions.
+* When nested model families are available, the minimal predefined
+  sufficient family is recorded for parsimony.
+* UNKNOWN may terminate with UNCERTAIN when evidence cannot distinguish
+  model-family failure from competing explanations.
+* Evaluator-private model-family truth, expressibility witnesses, condition
+  labels, and target mappings must never cross the public UNKNOWN boundary.
 
 ---
 
@@ -1833,17 +1937,18 @@ proof of the research hypothesis.
 | S0.5-D.5.2 world-family design | Completed — research specification |
 | S0.5-D.5.3.1 model-family / representation boundary | Completed — research specification |
 | S0.5-D.5.3.2 P1 parameter-failure construction | Completed — research specification |
+| S0.5-D.5.3.3 M1 model-family failure construction | Completed — research specification |
 | Synthetic benchmark dynamics | Partially implemented; scientific benchmark mechanisms remain incomplete |
 | Autonomous discovery system | Not yet implemented |
 
-**Current checkpoint:** S0.5-D.5.3.2 P1 Parameter-Failure Construction
+**Current checkpoint:** S0.5-D.5.3.3 M1 Model-Family Failure Construction
 
-**Next research stage:** S0.5-D.5.3.3 (or later) Controlled Failure Construction
+**Next research stage:** S0.5-D.5.3.4 (or later) Controlled Failure Construction
 
 **Next implementation stage:** Deferred until D.5.3 research/design decisions
 are sufficiently specified
 
-**Working tree requirement:** Clean after the D.5.3.2 checkpoint commit
+**Working tree requirement:** Clean after the D.5.3.3 checkpoint commit
 
 ---
 
