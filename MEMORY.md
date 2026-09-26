@@ -1417,6 +1417,52 @@ deferred to later D.5.3 sub-stages.
 
 ---
 
+## S0.5-D.5.3.2 P1 Parameter-Failure Construction
+
+D.5.3.2 defines the controlled P1 (Parameter Failure) condition required to
+cleanly separate parameter inadequacy from representation-level inadequacy
+and model-family inadequacy.
+
+### Core decisions
+
+* P1 is structurally defined as a condition where R₀ and M₀ are sufficient,
+  θ₀ is intentionally incorrect, θ* exists within M₀, and θ* is identifiable
+  under the permitted public experimental protocol.
+* Parameter estimates are not representation extensions.
+* The canonical P1 control is the deterministic system
+  `s[t+1] = α*s[t] + β*u[t]`.
+* P1/N1 is separated by parameter identifiability; if materially different
+  parameterizations remain indistinguishable under the permitted protocol,
+  the condition is N1.
+* P1/M1 is separated by whether the true mapping exists within the frozen
+  model family.
+* P1/R1 is separated by absence/presence of R₀ representation collisions.
+* Canonical P1 is deterministic and noise-free; stochastic/noisy/mixed
+  variants are deferred until X1 is independently controlled.
+* P1 recovery must generalize to held-out observations/interventions and
+  cannot rely on parameter memorization.
+* Evaluator-private parameter truth and identifiability information must
+  never enter UNKNOWN's public boundary.
+
+### Scientific role
+
+P1 exists to give the benchmark a clean negative control: a condition where
+the correct answer is "optimize parameters, do not extend the representation
+or expand the model family." Without a rigorously separated P1, any
+performance gain from parameter re-fitting could be mistakenly attributed to
+representation or model-family effects. Defining P1 via a deterministic,
+noise-free linear-recurrence system with a known, identifiable θ* keeps the
+P1/M1/R1/N1 boundaries well-posed and testable independently of stochastic
+variation (X1).
+
+### Status
+
+Completed — research specification only. Executable P1 world-instance
+generation, θ₀/θ* construction, identifiability verification, and held-out
+generalization testing remain deferred to later D.5.3 sub-stages.
+
+---
+
 # Required Future Environment Conditions
 
 The eventual benchmark must distinguish:
@@ -1517,7 +1563,7 @@ The project will not:
 
 **Sprint:** 0 - Scientific Foundation
 
-**Current Stage:** S0.5-D.5.3.1 Model-Family / Representation Boundary
+**Current Stage:** S0.5-D.5.3.2 P1 Parameter-Failure Construction
 
 | Stage | Status |
 |---|---|
@@ -1531,7 +1577,8 @@ The project will not:
 | S0.5-D.5.1 | Completed — research specification only |
 | S0.5-D.5.2 | Completed — research specification only |
 | S0.5-D.5.3.1 | Completed — research specification only |
-| S0.5-D.5.3.2 | Next |
+| S0.5-D.5.3.2 | Completed — research specification only |
+| S0.5-D.5.3.3 | Next |
 
 Implementation: Active
 
@@ -1543,7 +1590,7 @@ Research gap: Candidate and provisional
 
 Current verified implementation test suite: **178 passed**
 
-Next milestone: **S0.5-D.5.3.2 (or later) Controlled Failure Construction**
+Next milestone: **S0.5-D.5.3.3 (or later) Controlled Failure Construction**
 
 ---
 
@@ -1733,6 +1780,24 @@ determine:
   extension.
 * The R₀ closure must be frozen before final UNKNOWN evaluation and cannot
   be adapted from UNKNOWN performance.
+* P1 is structurally defined as a condition where R₀ and M₀ are sufficient,
+  θ₀ is intentionally incorrect, θ* exists within M₀, and θ* is identifiable
+  under the permitted public experimental protocol.
+* Parameter estimates are not representation extensions.
+* The canonical P1 control is the deterministic system
+  `s[t+1] = α*s[t] + β*u[t]`.
+* P1/N1 is separated by parameter identifiability; if materially different
+  parameterizations remain indistinguishable under the permitted protocol,
+  the condition is N1.
+* P1/M1 is separated by whether the true mapping exists within the frozen
+  model family.
+* P1/R1 is separated by absence/presence of R₀ representation collisions.
+* Canonical P1 is deterministic and noise-free; stochastic/noisy/mixed
+  variants are deferred until X1 is independently controlled.
+* P1 recovery must generalize to held-out observations/interventions and
+  cannot rely on parameter memorization.
+* Evaluator-private parameter truth and identifiability information must
+  never enter UNKNOWN's public boundary.
 
 ---
 
@@ -1767,17 +1832,18 @@ proof of the research hypothesis.
 | S0.5-D.5.1 baseline representation contract | Completed — research specification |
 | S0.5-D.5.2 world-family design | Completed — research specification |
 | S0.5-D.5.3.1 model-family / representation boundary | Completed — research specification |
+| S0.5-D.5.3.2 P1 parameter-failure construction | Completed — research specification |
 | Synthetic benchmark dynamics | Partially implemented; scientific benchmark mechanisms remain incomplete |
 | Autonomous discovery system | Not yet implemented |
 
-**Current checkpoint:** S0.5-D.5.3.1 Model-Family / Representation Boundary
+**Current checkpoint:** S0.5-D.5.3.2 P1 Parameter-Failure Construction
 
-**Next research stage:** S0.5-D.5.3.2 (or later) Controlled Failure Construction
+**Next research stage:** S0.5-D.5.3.3 (or later) Controlled Failure Construction
 
 **Next implementation stage:** Deferred until D.5.3 research/design decisions
 are sufficiently specified
 
-**Working tree requirement:** Clean after the D.5.3.1 checkpoint commit
+**Working tree requirement:** Clean after the D.5.3.2 checkpoint commit
 
 ---
 

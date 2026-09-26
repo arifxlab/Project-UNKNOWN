@@ -906,9 +906,31 @@ and later executable stages.
 the executable failure conditions and their evaluator-side ground truth are
 scientifically specified.
 
+### S0.5-D.5.3.2 — P1 Parameter-Failure Construction
+
+* [x] Define parameter semantics.
+* [x] Define canonical deterministic P1 world.
+* [x] Establish representation sufficiency requirement.
+* [x] Establish model-family sufficiency requirement.
+* [x] Define intentionally incorrect initial parameters.
+* [x] Define structural parameter identifiability.
+* [x] Define P1/N1 boundary.
+* [x] Define P1/M1 boundary.
+* [x] Define P1/R1 boundary.
+* [x] Define P1/X1 boundary.
+* [x] Establish deterministic canonical control.
+* [x] Establish matched-condition requirements.
+* [x] Establish parameter memorization controls.
+* [x] Establish held-out recovery validation.
+* [x] Establish intervention evidence rules.
+* [x] Establish evaluator-private parameter truth.
+* [x] Establish passive and active P1 modes.
+* [x] Define deferred noisy/stochastic P1 variants.
+* [x] Close P1 research/design contract.
+
 ### Next
 
-* [ ] S0.5-D.5.3.2 — P1 Parameter-Failure Construction
+* [ ] S0.5-D.5.3.3 — M1 Model-Family Failure Construction
 
 ---
 
@@ -1215,6 +1237,7 @@ scientifically specified.
 * [x] S0.5-D.5.2 world-family design
 * [x] S0.5-D.5.2 evidence
 * [x] S0.5-D.5.3.1 model-family semantics & recovery capability boundary
+* [x] S0.5-D.5.3.2 P1 parameter-failure construction
 * [ ] S0.5-D.5.3 controlled failure construction
 * [ ] Final Sprint 0 evidence package
 
